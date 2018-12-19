@@ -1,0 +1,293 @@
+<template>
+  <div id="draw-lamp">
+    <div class="dl-canvas">
+      <div class="dl-bg" :class="{ 'show-bg': showBG }" />
+      <div class="dl-fg" :class="{ 'show-fg': !showBG }" />
+      <p class="title">绘制你的彩灯</p>
+      <svg>
+        <mask id="myMask">
+          <path id="svg-lamp" v-if="d" :d="d" fill="white" />
+        </mask>
+        <path id="svg-lamp" v-if="d" :d="d" :fill="color1" />
+        <texture v-if="color2" :fill="color2" />
+        <texture v-if="color3" :fill="color3" />
+        <texture v-if="color4" :fill="color4" />
+      </svg>
+      <canvas width="320" height="320" />
+      <div class="dl-config" :class="{ 'show-cfg': !showBG }">
+        <select-color :color="color1" />
+        <select-color :color="color2" />
+        <select-color :color="color3" />
+        <select-color :color="color4" />
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+import Texture from '../texture'
+import SelectColor from './SelectColor'
+
+const _S = 20 // subdivision
+const PI_S = 2 * Math.PI / _S
+const sinS = []
+const cosS = []
+for (let i = 0; i < _S; i++) {
+  sinS.push(Math.sin(PI_S * i))
+  cosS.push(Math.cos(PI_S * i))
+}
+
+const genControlPoints = (points) => {
+  const dis = points.map((p, i, points) => {
+    let prev = i - 1
+    if (prev < 0) {
+      prev += points.length
+    }
+    const prevP = points[prev]
+    return Math.sqrt(Math.pow(p.x - prevP.x, 2) + Math.pow(p.y - prevP.y, 2))
+  })
+  let p1 = points[points.length - 1]
+  const controlPoints = points.map((p, i, points) => {
+    let next = i + 1
+    if (next >= points.length) {
+      next -= points.length
+    }
+    const p2 = points[next]
+    const v1 = [(p1.x - p.x) / dis[i], (p1.y - p.y) / dis[i]]
+    const v2 = [(p2.x - p.x) / dis[next], (p2.y - p.y) / dis[next]]
+    const tangent = [v2[0] - v1[0], v2[1] - v1[1]]
+    const cpLeft = {
+      x: p.x - tangent[0] * dis[i] * 0.15,
+      y: p.y - tangent[1] * dis[i] * 0.15
+    }
+    const cpRight = {
+      x: p.x + tangent[0] * dis[next] * 0.15,
+      y: p.y + tangent[1] * dis[next] * 0.15
+    }
+    p1 = p
+    return { cpLeft, cpRight }
+  })
+
+  return controlPoints
+}
+
+export default {
+  name: 'DrawLamp',
+  data () {
+    return {
+      canvas: null,
+      ctx: null,
+      showBG: true,
+      canvasX: 0,
+      canvasY: 0,
+      points: [],
+      d: '',
+      color1: '#c51313',
+      color2: '#8d1111',
+      color3: '',
+      color4: ''
+    }
+  },
+  mounted () {
+    const canvas = this.$el.querySelector('canvas')
+    this.canvas = canvas
+    const { x, y } = canvas.getBoundingClientRect()
+    this.canvasX = x
+    this.canvasY = y
+    const ctx = canvas.getContext('2d')
+    ctx.strokeStyle = '#8de462'
+    ctx.lineWidth = 4
+    this.ctx = ctx
+    canvas.addEventListener('touchstart', this.beginPainting)
+    canvas.addEventListener('touchend', this.endPainting)
+  },
+  methods: {
+    processPoints () {
+      const polar = []
+      for (const point of this.points) {
+        const x = point.x - 160
+        const y = 172 - point.y
+        const a = Math.atan2(x, y) + Math.PI
+        const d = Math.sqrt(x * x + y * y)
+        polar.push({ a, d })
+      }
+      polar.sort((a, b) => a.a - b.a)
+      const p0 = polar[0]
+      const pn = polar[polar.length - 1]
+      const ddis = (pn.d - p0.d) * p0.a / (p0.a + Math.PI * 2 - pn.a) + p0.d
+      polar.unshift({ a: 0, d: ddis })
+      polar.push({ a: Math.PI * 2, d: ddis })
+      const disS = []
+      for (let i = 0; i < _S; i++) {
+        const angle = PI_S * i
+        let ddis = 118
+        let prev = polar[0]
+        for (let j = 1; j < polar.length; j++) {
+          if ((prev.a - angle) * (polar[j].a - angle) <= 0) {
+            ddis = (polar[j].d - prev.d) * (angle - prev.a) / (polar[j].a - prev.a) + prev.d
+            break
+          }
+          prev = polar[j]
+        }
+        disS.push(Math.round(ddis))
+      }
+
+      const pointS = disS.map((dis, i) => {
+        return {
+          x: -sinS[i] * dis,
+          y: cosS[i] * dis
+        }
+      })
+
+      const ctrlPointS = genControlPoints(pointS)
+
+      const ctx = this.ctx
+      ctx.beginPath()
+      ctx.save()
+      ctx.translate(160, 172)
+      ctx.moveTo(pointS[_S - 1].x, pointS[_S - 1].y)
+      let d = `M ${pointS[_S - 1].x} ${pointS[_S - 1].y} `
+      for (let i = 0; i < _S; i++) {
+        const p = pointS[i]
+        const cp1 = (i === 0 ? ctrlPointS[_S - 1] : ctrlPointS[i - 1]).cpRight
+        const cp2 = ctrlPointS[i].cpLeft
+        ctx.bezierCurveTo(cp1.x, cp1.y, cp2.x, cp2.y, p.x, p.y)
+        d += ` C ${cp1.x} ${cp1.y}, ${cp2.x} ${cp2.y}, ${p.x} ${p.y}`
+      }
+      ctx.closePath()
+      ctx.restore()
+      ctx.save()
+      ctx.clearRect(0, 0, 320, 320)
+      ctx.strokeStyle = '#e0eedc'
+      ctx.stroke()
+      ctx.restore()
+      d += ' Z'
+      this.d = d
+    },
+    beginPainting (e) {
+      e.preventDefault()
+      this.showBG = true
+      this.points = []
+      this.ctx.clearRect(0, 0, 320, 320)
+      this.d = ''
+      const touch = e.touches[0]
+      const x = touch.clientX - this.canvasX
+      const y = touch.clientY - this.canvasY
+      this.points.unshift({ x, y })
+      this.canvas.addEventListener('touchmove', this.painting)
+    },
+    painting (e) {
+      e.preventDefault()
+      const touch = e.touches[0]
+      const x = touch.clientX - this.canvasX
+      const y = touch.clientY - this.canvasY
+      const lastPoint = this.points[0]
+      this.points.unshift({ x, y })
+      const ctx = this.ctx
+      ctx.beginPath()
+      ctx.moveTo(lastPoint.x, lastPoint.y)
+      ctx.lineTo(x, y)
+      ctx.closePath()
+      ctx.stroke()
+    },
+    endPainting () {
+      this.showBG = false
+      this.canvas.removeEventListener('touchmove', this.painting)
+      this.processPoints()
+    }
+  },
+  components: {
+    Texture,
+    SelectColor
+  }
+}
+</script>
+
+<style lang="stylus" scoped>
+#draw-lamp
+  width 100%
+  height 100%
+  position fixed
+  top 0
+  left 0
+  background-color #0004
+.dl-canvas
+  position absolute
+  top 50%
+  left 50%
+  transform translate3d(-50%, -50%, 0)
+  width 340px
+  height 340px
+  border-radius 20px
+  border solid 10px #fff
+  background-color #2f7165
+  box-shadow 6px 6px 30px #0002 inset
+.dl-bg
+  position absolute
+  top 10px
+  left 10px
+  width 320px
+  height 320px
+  background-image url(../assets/lamp_bg.png)
+  background-repeat no-repeat
+  background-position center
+  opacity 0
+  transition opacity .4s
+.show-bg
+  opacity .5
+.dl-fg
+  position absolute
+  top 10px
+  left 10px
+  width 320px
+  height 320px
+  background-image url(../assets/lamp_fg.png)
+  background-repeat no-repeat
+  background-position center
+  opacity 0
+  transition opacity .4s
+.show-fg
+  opacity 1
+.title
+  font-size 30px
+  line-height 30px
+  position absolute
+  margin 0
+  left 10px
+  top -40px
+  font-family 'Yuanti SC', 'YouYuan'
+canvas
+  position absolute
+  top 10px
+  left 10px
+  width 320px
+  height 320px
+svg
+  position absolute
+  top 10px
+  left 10px
+  width 320px
+  height 320px
+  #svg-lamp
+    transform translate3d(160px, 172px, 0)
+.dl-config
+  position absolute
+  width 360px
+  left -10px
+  bottom -50px
+  display flex
+  justify-content space-between
+  transform translateY(40px)
+  opacity 0
+  transition transform .6s, opacity .6s
+  >div
+    width 60px
+    height 60px
+    border solid 10px #fff
+    border-radius 20px
+    background-color #2f7165
+    box-shadow 2px 2px 10px #0001 inset
+.show-cfg
+  transform translateY(0)
+  opacity 1
+</style>
