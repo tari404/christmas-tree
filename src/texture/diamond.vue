@@ -1,5 +1,6 @@
 <template>
   <g :style="{ 'transform': `scale(${scale || 1})` }">
+    <g style="transform: translateY(3px)">
     <polygon points="31.1,107 15.6,128.6 0,107 15.6,85.4 "/>
     <polygon points="72.4,107 56.8,128.6 41.3,107 56.8,85.4 "/>
     <polygon points="113.7,107 98.1,128.6 82.5,107 98.1,85.4 "/>
@@ -16,6 +17,7 @@
     <polygon points="237.5,232 221.9,253.6 206.3,232 221.9,210.4 "/>
     <polygon points="278.7,232 263.2,253.6 247.6,232 263.2,210.4 "/>
     <polygon points="320,232 304.4,253.6 288.9,232 304.4,210.4 "/>
+    </g>
   </g>
 </template>
 
