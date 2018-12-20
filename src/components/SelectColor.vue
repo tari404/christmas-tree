@@ -7,7 +7,11 @@
         }" class="cross"></div>
       </div>
     </transition>
-    <div class="target" :style="{ 'background-color': color }" @touchstart="toggleMenu"></div>
+    <div class="target" :style="{ 'background-color': color }" @touchstart="toggleMenu">
+      <transition name="fade">
+        <div class="confirm" v-if="focus" />
+      </transition>
+    </div>
   </div>
 </template>
 
@@ -23,18 +27,16 @@ export default {
   },
   props: ['color'],
   created () {
-    const res = this.color.match(/hsl\((\d+), \d+%, (\d+)%\)/)
-    if (res) {
-      this.h = Number(res[1])
-      this.b = Number(res[2]) * 2
-    } else {
-      this.h = 0
-      this.b = 100
-    }
+    this.updateHB(this.color)
   },
   watch: {
     color (value) {
-      const res = value.match(/hsl\((\d+), \d+%, (\d+)%\)/)
+      this.updateHB(value)
+    }
+  },
+  methods: {
+    updateHB (color) {
+      const res = color.match(/hsl\((\d+), \d+%, (\d+)%\)/)
       if (res) {
         this.h = Number(res[1])
         this.b = Number(res[2]) * 2
@@ -42,9 +44,7 @@ export default {
         this.h = 0
         this.b = 100
       }
-    }
-  },
-  methods: {
+    },
     toggleMenu () {
       this.focus = !this.focus
     },
@@ -111,4 +111,35 @@ export default {
   border-radius 20px
   background-color #fff
   box-shadow 2px 2px 10px #0003 inset
+.confirm
+  width 0
+  height 0
+  position absolute
+  top 30px
+  left 30px
+  transform rotate(45deg)
+  &:before
+    content ''
+    width 8px
+    height 0px
+    left -9px
+    top 5px
+    border solid 2px #fff
+    border-radius 2px
+    position absolute
+    background-color #fff
+  &:after
+    content ''
+    width 0px
+    height 20px
+    left 1px
+    top -15px
+    border solid 2px #fff
+    border-radius 2px
+    position absolute
+    background-color #fff
+.fade-enter, .fade-leave-to
+  opacity 0
+.fade-enter-active, .fade-leave-active
+  transition opacity .3s
 </style>

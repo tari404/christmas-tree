@@ -5,27 +5,27 @@
       <div class="dl-fg" :class="{ 'show-fg': !showBG }" />
       <p class="title">绘制你的彩灯</p>
       <svg>
-        <mask id="myMask">
+        <mask id="svg-mask">
           <path id="svg-lamp" v-if="d" :d="d" fill="white" />
         </mask>
-        <path id="svg-lamp" v-if="d" :d="d" :fill="color1" />
-        <texture v-if="color2" :fill="color2" />
-        <texture v-if="color3" :fill="color3" />
-        <texture v-if="color4" :fill="color4" />
+        <path id="svg-lamp" v-if="d" :d="d" :fill="color0" />
+        <g class="texture"><texture :typeIndex="t1" v-if="color1" scale="1.4" :fill="color1" /></g>
+        <g class="texture"><texture :typeIndex="t2" v-if="color2" scale="1.2" :fill="color2" /></g>
+        <g class="texture"><texture :typeIndex="t3" v-if="color3" scale="1.0" :fill="color3" /></g>
       </svg>
       <canvas width="320" height="320" />
       <div class="dl-config" :class="{ 'show-cfg': !showBG }">
-        <select-color :color="color1" @select="updateMainColor" />
-        <select-texture :color="color2" @select="updateColor2" />
-        <select-texture :color="color3" />
-        <select-texture :color="color4" />
+        <select-color :color="color0" @select="updateMainColor" />
+        <select-texture :color="color1" :texture.sync="t1" @select="updateColor1" @delete="delColor(1)" />
+        <select-texture :color="color2" :texture.sync="t2" @select="updateColor2" @delete="delColor(2)" />
+        <select-texture :color="color3" :texture.sync="t3" @select="updateColor3" @delete="delColor(3)" />
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import Texture from '../texture'
+import { Texture } from '../texture'
 import SelectColor from './SelectColor'
 import SelectTexture from './SelectTexture'
 
@@ -83,10 +83,13 @@ export default {
       canvasY: 0,
       points: [],
       d: '',
-      color1: 'hsl(0, 100%, 38%)',
-      color2: 'hsl(0, 100%, 28%)',
+      color0: 'hsl(0, 100%, 38%)',
+      color1: 'hsl(0, 100%, 28%)',
+      color2: '',
       color3: '',
-      color4: ''
+      t1: 0,
+      t2: 0,
+      t3: 0
     }
   },
   mounted () {
@@ -195,10 +198,20 @@ export default {
       this.processPoints()
     },
     updateMainColor (h, l) {
+      this.color0 = `hsl(${h}, 100%, ${l}%)`
+    },
+    updateColor1 (h, l) {
       this.color1 = `hsl(${h}, 100%, ${l}%)`
     },
     updateColor2 (h, l) {
       this.color2 = `hsl(${h}, 100%, ${l}%)`
+    },
+    updateColor3 (h, l) {
+      this.color3 = `hsl(${h}, 100%, ${l}%)`
+    },
+    delColor (index) {
+      this[`color${index}`] = ''
+      this[`t${index}`] = 0
     }
   },
   components: {
@@ -216,7 +229,7 @@ export default {
   position fixed
   top 0
   left 0
-  background-color #0004
+  background-color #0006
 .dl-canvas
   position absolute
   top 50%
@@ -276,6 +289,10 @@ svg
   height 320px
   #svg-lamp
     transform translate3d(160px, 172px, 0)
+  .texture
+    mask url(#svg-mask)
+    g
+      transform-origin 160px 172px
 .dl-config
   position absolute
   width 320px
