@@ -9,7 +9,8 @@
   },
   "dependencies": {
     "fft-js": "0.0.11",
-    "vue": "^2.5.17"
+    "vue": "^2.5.17",
+    "vue-let-it-snow": "^1.0.0"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "^3.0.0",

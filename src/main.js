@@ -1,5 +1,8 @@
 import Vue from 'vue'
 import App from './App.vue'
+import LetItSnow from 'vue-let-it-snow'
+
+Vue.use(LetItSnow)
 
 Vue.config.productionTip = false
 

@@ -21,7 +21,7 @@
         <select-texture :color="color3" :texture.sync="t3" @select="updateColor3" @delete="delColor(3)" />
       </div>
     </div>
-    <div class="confirm" @touchstart="submit">确定并提交</div>
+    <div v-if="ready" class="button" @touchstart="submit">确定并提交</div>
   </div>
 </template>
 
@@ -102,7 +102,8 @@ export default {
       color3: '',
       t1: 0,
       t2: 0,
-      t3: 0
+      t3: 0,
+      ready: false
     }
   },
   mounted () {
@@ -150,6 +151,7 @@ export default {
       }
 
       this.disS = disS
+      this.ready = true
 
       const pointS = disS.map((dis, i) => {
         return {
@@ -184,6 +186,7 @@ export default {
       this.d = d
     },
     beginPainting (e) {
+      this.ready = false
       this.showBG = true
       this.points = []
       this.ctx.clearRect(0, 0, 320, 320)
@@ -229,6 +232,7 @@ export default {
       this[`t${index}`] = 0
     },
     submit () {
+      // eslint-disable-next-line
       let code = this.disS.reduce((prev, current) => {
         return prev + Math.min(current, 255).toString(16)
       }, '0x')
@@ -237,7 +241,7 @@ export default {
       code += encodeColor(this.color2) + this.t2.toString(16).padStart(2, '0')
       code += encodeColor(this.color3) + this.t3.toString(16).padStart(2, '0')
       code += '99'
-      console.log(code)
+      this.$emit('finish')
     }
   },
   components: {
@@ -256,6 +260,7 @@ export default {
   top 0
   left 0
   background-color #0006
+  z-index 10001
 .dl-canvas
   position absolute
   top 50%
@@ -334,8 +339,8 @@ svg
 .show-cfg
   transform translateY(0)
   opacity 1
-.confirm
-  position absolute
+.button
+  position fixed
   bottom 20px
   left 50%
   transform translate3d(-50%, 0, 0)
