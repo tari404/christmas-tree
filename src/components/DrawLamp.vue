@@ -248,7 +248,8 @@ export default {
       code += encodeColor(this.color2) + this.t2.toString(16).padStart(2, '0')
       code += encodeColor(this.color3) + this.t3.toString(16).padStart(2, '0')
       code += '99'
-      this.$emit('finish')
+      console.log(code)
+      // this.$emit('finish')
     }
   },
   components: {
