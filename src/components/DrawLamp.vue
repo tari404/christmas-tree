@@ -15,10 +15,10 @@
       </svg>
       <canvas width="320" height="320" />
       <div class="dl-config" :class="{ 'show-cfg': !showBG }">
-        <select-color :color="color1" />
-        <select-color :color="color2" />
-        <select-color :color="color3" />
-        <select-color :color="color4" />
+        <select-color :color="color1" @select="updateMainColor" />
+        <select-texture :color="color2" @select="updateColor2" />
+        <select-texture :color="color3" />
+        <select-texture :color="color4" />
       </div>
     </div>
   </div>
@@ -27,6 +27,7 @@
 <script>
 import Texture from '../texture'
 import SelectColor from './SelectColor'
+import SelectTexture from './SelectTexture'
 
 const _S = 20 // subdivision
 const PI_S = 2 * Math.PI / _S
@@ -82,8 +83,8 @@ export default {
       canvasY: 0,
       points: [],
       d: '',
-      color1: '#c51313',
-      color2: '#8d1111',
+      color1: 'hsl(0, 100%, 38%)',
+      color2: 'hsl(0, 100%, 28%)',
       color3: '',
       color4: ''
     }
@@ -165,7 +166,6 @@ export default {
       this.d = d
     },
     beginPainting (e) {
-      e.preventDefault()
       this.showBG = true
       this.points = []
       this.ctx.clearRect(0, 0, 320, 320)
@@ -177,7 +177,6 @@ export default {
       this.canvas.addEventListener('touchmove', this.painting)
     },
     painting (e) {
-      e.preventDefault()
       const touch = e.touches[0]
       const x = touch.clientX - this.canvasX
       const y = touch.clientY - this.canvasY
@@ -194,11 +193,18 @@ export default {
       this.showBG = false
       this.canvas.removeEventListener('touchmove', this.painting)
       this.processPoints()
+    },
+    updateMainColor (h, l) {
+      this.color1 = `hsl(${h}, 100%, ${l}%)`
+    },
+    updateColor2 (h, l) {
+      this.color2 = `hsl(${h}, 100%, ${l}%)`
     }
   },
   components: {
     Texture,
-    SelectColor
+    SelectColor,
+    SelectTexture
   }
 }
 </script>
@@ -272,21 +278,17 @@ svg
     transform translate3d(160px, 172px, 0)
 .dl-config
   position absolute
-  width 360px
-  left -10px
-  bottom -50px
+  width 320px
+  left 10px
+  bottom -40px
   display flex
   justify-content space-between
   transform translateY(40px)
   opacity 0
   transition transform .6s, opacity .6s
   >div
-    width 60px
-    height 60px
-    border solid 10px #fff
-    border-radius 20px
-    background-color #2f7165
-    box-shadow 2px 2px 10px #0001 inset
+    width 70px
+    height 70px
 .show-cfg
   transform translateY(0)
   opacity 1

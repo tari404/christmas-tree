@@ -7,13 +7,15 @@
         }" class="cross"></div>
       </div>
     </transition>
-    <div class="target" :style="{ 'background-color': color }" @touchstart="toggleMenu"></div>
+    <div class="target" :style="{ 'background-color': color }" @touchstart="toggleMenu">
+      <div class="add-color" v-if="!color"></div>
+    </div>
   </div>
 </template>
 
 <script>
 export default {
-  name: 'SelectColor',
+  name: 'SelectTexture',
   data () {
     return {
       focus: false,
@@ -111,4 +113,26 @@ export default {
   border-radius 20px
   background-color #fff
   box-shadow 2px 2px 10px #0003 inset
+.add-color
+  width 0
+  height 0
+  position absolute
+  top 30px
+  left 30px
+  &:before
+    content ''
+    width 12px
+    height 2px
+    left -6px
+    top -1px
+    position absolute
+    background-color #2d7265
+  &:after
+    content ''
+    width 2px
+    height 12px
+    left -1px
+    top -6px
+    position absolute
+    background-color #2d7265
 </style>
