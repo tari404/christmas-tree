@@ -21,6 +21,7 @@
         <select-texture :color="color3" :texture.sync="t3" @select="updateColor3" @delete="delColor(3)" />
       </div>
     </div>
+    <div class="confirm" @touchstart="submit">确定并提交</div>
   </div>
 </template>
 
@@ -72,6 +73,17 @@ const genControlPoints = (points) => {
   return controlPoints
 }
 
+const encodeColor = (hslString) => {
+  const res = hslString.match(/hsl\((\d+), \d+%, (\d+)%\)/)
+  if (res) {
+    const h = Number(res[1])
+    const b = Number(res[2]) * 2
+    return (h * 128 + b).toString(16).padStart(4, '0')
+  } else {
+    return '0000'
+  }
+}
+
 export default {
   name: 'DrawLamp',
   data () {
@@ -82,6 +94,7 @@ export default {
       canvasX: 0,
       canvasY: 0,
       points: [],
+      disS: [],
       d: '',
       color0: 'hsl(0, 100%, 38%)',
       color1: 'hsl(0, 100%, 28%)',
@@ -135,6 +148,8 @@ export default {
         }
         disS.push(Math.round(ddis))
       }
+
+      this.disS = disS
 
       const pointS = disS.map((dis, i) => {
         return {
@@ -212,6 +227,17 @@ export default {
     delColor (index) {
       this[`color${index}`] = ''
       this[`t${index}`] = 0
+    },
+    submit () {
+      let code = this.disS.reduce((prev, current) => {
+        return prev + Math.min(current, 255).toString(16)
+      }, '0x')
+      code += encodeColor(this.color0)
+      code += encodeColor(this.color1) + this.t1.toString(16).padStart(2, '0')
+      code += encodeColor(this.color2) + this.t2.toString(16).padStart(2, '0')
+      code += encodeColor(this.color3) + this.t3.toString(16).padStart(2, '0')
+      code += '99'
+      console.log(code)
     }
   },
   components: {
@@ -274,7 +300,6 @@ export default {
   margin 0
   left 10px
   top -40px
-  font-family 'Yuanti SC', 'YouYuan'
 canvas
   position absolute
   top 10px
@@ -309,4 +334,9 @@ svg
 .show-cfg
   transform translateY(0)
   opacity 1
+.confirm
+  position absolute
+  bottom 20px
+  left 50%
+  transform translate3d(-50%, 0, 0)
 </style>

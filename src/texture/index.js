@@ -2,6 +2,8 @@ import Vue from 'vue'
 
 import lines from './lines'
 import lines2 from './lines2'
+import broken from './broken'
+import diamond from './diamond'
 
 export const Texture = Vue.component('interface-input', {
   functional: true,
@@ -12,6 +14,10 @@ export const Texture = Vue.component('interface-input', {
           return lines
         case 1:
           return lines2
+        case 2:
+          return broken
+        case 3:
+          return diamond
         default:
           return lines
       }
@@ -23,5 +29,7 @@ export const Texture = Vue.component('interface-input', {
 
 export const catalog = [
   '三线条',
-  '线条'
+  '线条',
+  '折线',
+  '菱形'
 ]
