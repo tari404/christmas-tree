@@ -241,7 +241,7 @@ export default {
     submit () {
       // eslint-disable-next-line
       let code = this.disS.reduce((prev, current) => {
-        return prev + Math.min(current, 255).toString(16)
+        return prev + Math.min(current, 255).toString(16).padStart(2, '0')
       }, '0x')
       code += encodeColor(this.color0)
       code += encodeColor(this.color1) + this.t1.toString(16).padStart(2, '0')
