@@ -1,11 +1,12 @@
 <template>
   <div id="app" @touchstart.prevent @touchmove.prevent>
     <let-it-snow v-bind="snowConf" :show="snow"></let-it-snow>
-    <p id="title">{{owner}} 的圣诞树</p>
+    <p id="title">{{owner === me ? '我' : owner}} 的圣诞树</p>
     <div id="tree"></div>
     <draw-lamp v-if="route === 'add'" @finish="backToHome" />
     <div id="buttons" v-if="route === ''">
-      <div class="button" @touchstart="addLamp">帮好友挂上彩灯</div>
+      <div v-if="owner !== me" class="button" @touchstart="addLamp">帮好友挂上彩灯</div>
+      <div v-if="owner !== me" class="button">查看我的圣诞树</div>
     </div>
   </div>
 </template>
@@ -17,6 +18,8 @@ export default {
   name: 'App',
   data () {
     return {
+      owner: 'undefined',
+      me: 'unknow',
       snow: false,
       snowConf: {
         windPower: 1,
@@ -29,7 +32,7 @@ export default {
           '/snow_s.png'
         ]
       },
-      owner: 'undefined',
+      treeInfo: {},
       route: ''
     }
   },
@@ -85,4 +88,6 @@ body
   display flex
   justify-content center
   z-index 10000
+.button
+  margin 0 10px
 </style>

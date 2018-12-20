@@ -1,9 +1,11 @@
 <template>
   <div id="draw-lamp">
+    <div class="return" @touchstart="$emit('finish')">返回</div>
     <div class="dl-canvas">
       <div class="dl-bg" :class="{ 'show-bg': showBG }" />
       <div class="dl-fg" :class="{ 'show-fg': !showBG }" />
       <p class="title">绘制你的彩灯</p>
+      <span class="reset" @touchstart="reset">重制</span>
       <svg>
         <mask id="svg-mask">
           <path id="svg-lamp" v-if="d" :d="d" fill="white" />
@@ -14,12 +16,14 @@
         <g class="texture"><texture :typeIndex="t3" v-if="color3" scale="1.0" :fill="color3" /></g>
       </svg>
       <canvas width="320" height="320" />
-      <div class="dl-config" :class="{ 'show-cfg': !showBG }">
-        <select-color :color="color0" @select="updateMainColor" />
-        <select-texture :color="color1" :texture.sync="t1" @select="updateColor1" @delete="delColor(1)" />
-        <select-texture :color="color2" :texture.sync="t2" @select="updateColor2" @delete="delColor(2)" />
-        <select-texture :color="color3" :texture.sync="t3" @select="updateColor3" @delete="delColor(3)" />
-      </div>
+      <transition name="config">
+        <div class="dl-config" v-if="!showBG">
+          <select-color :color="color0" @select="updateMainColor" />
+          <select-texture :color="color1" :texture.sync="t1" @select="updateColor1" @delete="delColor(1)" />
+          <select-texture :color="color2" :texture.sync="t2" @select="updateColor2" @delete="delColor(2)" />
+          <select-texture :color="color3" :texture.sync="t3" @select="updateColor3" @delete="delColor(3)" />
+        </div>
+      </transition>
     </div>
     <div v-if="ready" class="button" @touchstart="submit">确定并提交</div>
   </div>
@@ -185,12 +189,15 @@ export default {
       d += ' Z'
       this.d = d
     },
-    beginPainting (e) {
+    reset () {
       this.ready = false
       this.showBG = true
       this.points = []
       this.ctx.clearRect(0, 0, 320, 320)
       this.d = ''
+    },
+    beginPainting (e) {
+      this.reset()
       const touch = e.touches[0]
       const x = touch.clientX - this.canvasX
       const y = touch.clientY - this.canvasY
@@ -261,6 +268,10 @@ export default {
   left 0
   background-color #0006
   z-index 10001
+.return
+  position fixed
+  top 20px
+  left 20px
 .dl-canvas
   position absolute
   top 50%
@@ -305,6 +316,10 @@ export default {
   margin 0
   left 10px
   top -40px
+.reset
+  position absolute
+  right 10px
+  top -36px
 canvas
   position absolute
   top 10px
@@ -330,15 +345,14 @@ svg
   bottom -40px
   display flex
   justify-content space-between
-  transform translateY(40px)
-  opacity 0
-  transition transform .6s, opacity .6s
   >div
     width 70px
     height 70px
-.show-cfg
-  transform translateY(0)
-  opacity 1
+.config-enter, .config-leave-to
+  transform translateY(40px)
+  opacity 0
+.config-enter-active, .config-leave-active
+  transition transform .6s, opacity .6s
 .button
   position fixed
   bottom 20px
