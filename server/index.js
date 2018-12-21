@@ -88,29 +88,39 @@ app.post('/', (req, res) => {
 })
 
 app.get('/nickname', (req, res) => {
-  const code = req.code
+  const code = req.query.code
   if (!code) {
-    res.send(400)
+    return res.sendStatus(400)
   }
   axios.get('https://api.weixin.qq.com/sns/oauth2/access_token', {
-    appid: config.appid,
-    secret: config.secret,
-    code,
-    grant_type: 'authorization_code'
+    params: {
+      appid: config.appid,
+      secret: config.secret,
+      code,
+      grant_type: 'authorization_code'
+    }
   }).then(token => {
-    if (token.errcode) {
-      res.send(400)
+    if (token.data.errcode) {
+      console.log(token.data)
+      return res.sendStatus(401)
     }
     return axios.get('https://api.weixin.qq.com/sns/userinfo', {
-      access_token: token.access_token,
-      openid: token.openid,
-      lang: 'zh_CN'
+      params: {
+        access_token: token.data.access_token,
+        openid: token.data.openid,
+        lang: 'zh_CN'
+      }
     })
   }).then(userinfo => {
-    if (userinfo.errcode) {
-      res.send(400)
+    if (!userinfo || userinfo.data.errcode) {
+      console.log(userinfo.data)
+      return res.sendStatus(401)
     }
-    res.send(userinfo.nickname)
+    res.json({
+      ok: true,
+      openid: userinfo.data.openid,
+      name: userinfo.data.nickname
+    })
   })
 })
 
