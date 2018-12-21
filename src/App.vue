@@ -158,7 +158,6 @@ export default {
       const openid = sessionStorage.getItem('xmas-openid')
       const name = sessionStorage.getItem('xmas-name')
       if (openid && name) {
-        console.log(openid, name)
         return {
           openid,
           name,
@@ -208,7 +207,6 @@ export default {
         this.hasTree = res.treeExist
         this.owner = res.owner
         this.treeLampsID = res.lampIDs
-        console.log(res.lampIDs)
         this.treeLamps = []
         for (let i = 1; i <= 10; i++) {
           const index = res.lampIDs.length - i
@@ -245,8 +243,8 @@ export default {
     },
     injectWxShareMenu({ shareUrl, shareTitle, shareDescr, shareIcon }) {
       let signUrl = encodeURIComponent(config.frontend)
-      axios.get(config.backend + '/wx-sign?signUrl=' + signUrl).then(res => {
-        console.log('sign url con is', res.data)
+      axios.get(config.backend + 'wx-sign?signUrl=' + signUrl).then(res => {
+        // console.log('sign url con is', res.data)
         if (res.data.code === 200) {
           let d = res.data.result
           wx.config({
@@ -256,13 +254,12 @@ export default {
             nonceStr: d.nonceStr,
             signature: d.signature,
             jsApiList: [
-              'onMenuShareAppMessage',
-              'onMenuShareTimeline',
-              'onMenuShareQQ'
+              'updateAppMessageShareData',
+              'updateTimelineShareData'
             ]
           })
           wx.ready(() => {
-            wx.onMenuShareAppMessage({
+            wx.updateAppMessageShareData({
               title: shareTitle,
               desc: decodeURIComponent(shareDescr),
               link: shareUrl,
@@ -274,24 +271,12 @@ export default {
                 alert("取消分享")
               }
             })
-            wx.onMenuShareTimeline({
+            wx.updateTimelineShareData({
               title: shareDescr,
               link: shareUrl,
               imgUrl: shareIcon,
               success: () => {
                 alert("分享微信好友成功")
-              },
-              cancel: () => {
-                alert("取消分享")
-              }
-            })
-            wx.onMenuShareQQ({
-              title: shareTitle,
-              desc: decodeURIComponent(shareDescr),
-              link: shareUrl,
-              imgUrl: shareIcon,
-              success: () => {
-                alert("分享QQ好友成功")
               },
               cancel: () => {
                 alert("取消分享")
