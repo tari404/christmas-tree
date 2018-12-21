@@ -183,7 +183,7 @@ export default {
     },
     share () {
       const url = config.frontend + '?id=' + this.treeID
-      this.injectWxShareMenu({ shareTitle: '用真心送祝福，祝福上链恒久流传', shareDescr: `我是${this.me}，给你送上圣诞祝福，邀请你一起点亮圣诞树`, shareIcon: '', shareUrl: url })
+      this.injectWxShareMenu({ shareTitle: '用真心送祝福，祝福上链恒久流传', shareDescr: `我是${this.me}，给你送上圣诞祝福，邀请你一起点亮圣诞树`, shareIcon: config.frontend+'share_icon_20181221205910.jpg', shareUrl: url })
     },
     async queryTreeInfo (id) {
       const url = config.frontend + '?id=' + id
