@@ -209,11 +209,12 @@ export default {
         this.owner = res.owner
         this.treeLampsID = res.lampIDs
         this.treeLamps = []
-        for (let i = 0; i < res.lampIDs.length; i++) {
-          if (i >= 10) {
+        for (let i = 1; i <= 10; i++) {
+          const index = res.lampIDs.length - i
+          if (i < 0) {
             break
           }
-          this.treeLamps.push(new LampInfo(this.treeID, res.lampIDs[i]))
+          this.treeLamps.push(new LampInfo(this.treeID, res.lampIDs[index]))
         }
       })
     },
