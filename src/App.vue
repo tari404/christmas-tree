@@ -207,7 +207,7 @@ export default {
         return
       }
       sendTxAfterCheck.call(this, address, () => {
-        this.status = '创建中...'
+        this.status = '数据上链中...'
         contract.methods.createNewTree(this.me).send({
           from: this.address,
           gas: 2000000,
