@@ -147,9 +147,10 @@ export default {
       this.queryTreeInfo(this.treeID)
     },
     async getWeChatUserName () {
-      const openid = sessionStorage.getItem('openid')
-      const name = sessionStorage.getItem('name')
+      const openid = sessionStorage.getItem('xmas-openid')
+      const name = sessionStorage.getItem('xmas-name')
       if (openid && name) {
+        console.log(openid, name)
         return {
           openid,
           name,
@@ -161,8 +162,8 @@ export default {
         return axios.get(config.backend + 'nickname', {
           params: { code }
         }).then(res => {
-          sessionStorage.setItem('openid', openid)
-          sessionStorage.setItem('name', name)
+          sessionStorage.setItem('xmas-openid', openid)
+          sessionStorage.setItem('xmas-name', name)
           return res.data
         }).catch(err => {
           console.error(err)
