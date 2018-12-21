@@ -50,10 +50,10 @@ export default {
     },
     select (e) {
       const bar = this.$el.querySelector('.color-bar')
-      const { x, y } = bar.getBoundingClientRect()
+      const { left, top } = bar.getBoundingClientRect()
       const touch = e.touches[0]
-      const l = Math.round(Math.max(Math.min(touch.clientX - x + 40, 100), 50) / 2)
-      const h = Math.round(Math.max(Math.min(touch.clientY - y - 10, 360), 0))
+      const l = Math.round(Math.max(Math.min(touch.clientX - left + 40, 100), 50) / 2)
+      const h = Math.round(Math.max(Math.min(touch.clientY - top - 10, 360), 0))
       this.$emit('select', h, l)
     }
   }
