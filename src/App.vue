@@ -34,7 +34,7 @@
 import Lamp from '@/components/Lamp'
 import DrawLamp from '@/components/DrawLamp'
 import axios from 'axios'
-import wx from "weixin-js-sdk"
+import wx from 'weixin-js-sdk'
 import config from '../config.json'
 
 let web3t, contract
@@ -208,10 +208,11 @@ export default {
         this.hasTree = res.treeExist
         this.owner = res.owner
         this.treeLampsID = res.lampIDs
+        console.log(res.lampIDs)
         this.treeLamps = []
         for (let i = 1; i <= 10; i++) {
           const index = res.lampIDs.length - i
-          if (i < 0) {
+          if (index < 0) {
             break
           }
           this.treeLamps.push(new LampInfo(this.treeID, res.lampIDs[index]))
@@ -242,60 +243,57 @@ export default {
         })
       })
     },
-    // 向微信分享菜单注入分享内容
-    injectWxShareMenu({shareUrl,shareTitle,shareDescr,shareIcon}) {
-      let signUrl = encodeURIComponent(location.href.split("#")[0])
-      axios.get(config.backend+'/wx-sign?signUrl='+signUrl).then(res=>{
-        console.log('sign url con is',res)
+    injectWxShareMenu({ shareUrl, shareTitle, shareDescr, shareIcon }) {
+      let signUrl = encodeURIComponent(config.frontend)
+      axios.get(config.backend + '/wx-sign?signUrl=' + signUrl).then(res => {
+        console.log('sign url con is', res.data)
         if (res.data.code === 200) {
           let d = res.data.result
           wx.config({
-            debug: true, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
-            appId: d.appId, // 必填，公众号的唯一标识
-            timestamp: d.timestamp, // 必填，生成签名的时间戳
-            nonceStr: d.nonceStr, // 必填，生成签名的随机串
-            signature: d.signature, // 必填，签名
-            jsApiList: ["onMenuShareAppMessage", "onMenuShareTimeline", "onMenuShareQQ"] 
+            debug: false,
+            appId: d.appId,
+            timestamp: d.timestamp,
+            nonceStr: d.nonceStr,
+            signature: d.signature,
+            jsApiList: [
+              'onMenuShareAppMessage',
+              'onMenuShareTimeline',
+              'onMenuShareQQ'
+            ]
           })
           wx.ready(() => {
             wx.onMenuShareAppMessage({
               title: shareTitle,
               desc: decodeURIComponent(shareDescr),
-              link: shareUrl, // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
-              imgUrl: shareIcon, // 分享图标
-              success: ()=> {
-                // 用户点击了分享后执行的回调函数
+              link: shareUrl,
+              imgUrl: shareIcon,
+              success: () => {
                 alert("分享微信好友成功")
               },
-              cancel: ()=> {
-                // 用户取消分享后执行的回调函数
+              cancel: () => {
                 alert("取消分享")
               }
             })
             wx.onMenuShareTimeline({
               title: shareDescr,
-              link: shareUrl, // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
-              imgUrl: shareIcon, // 分享图标
-              success: ()=> {
-                // 用户点击了分享后执行的回调函数
+              link: shareUrl,
+              imgUrl: shareIcon,
+              success: () => {
                 alert("分享微信好友成功")
               },
-              cancel: ()=> {
-                // 用户取消分享后执行的回调函数
+              cancel: () => {
                 alert("取消分享")
               }
             })
             wx.onMenuShareQQ({
-              title: shareTitle, 
+              title: shareTitle,
               desc: decodeURIComponent(shareDescr),
               link: shareUrl,
-              imgUrl: shareIcon, 
-              success: ()=> {
-                // 用户确认分享后执行的回调函数
+              imgUrl: shareIcon,
+              success: () => {
                 alert("分享QQ好友成功")
               },
-              cancel: ()=> {
-                // 用户取消分享后执行的回调函数
+              cancel: () => {
                 alert("取消分享")
               }
             })

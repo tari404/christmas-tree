@@ -128,9 +128,9 @@ app.get('/nickname', (req, res) => {
 
 app.get('/wx-sign', (req, res) => {
   let signUrl = encodeURIComponent(req.query.signUrl) 
-  req.pipe(request(`http://sc.truescan.net/api/unauth/weixin/getWxSign?url=${signUrl}`)).pipe(res)
+  req.pipe(request.post(`http://sc.truescan.net/api/unauth/weixin/getWxSign?url=${signUrl}`)).pipe(res)
 })
 
 
-console.log('server listen on port 3000')
-app.listen(3000)
+console.log('server listen on port 3100')
+app.listen(3100)
