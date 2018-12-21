@@ -5,6 +5,8 @@ const axios = require('axios')
 
 const config = require('./config.json')
 
+const wechat = require('./wechat.js')
+
 const web3t = new Web3('https://api.truescan.net/rpc/')
 const account = web3t.eth.accounts.privateKeyToAccount(config.privKey)
 web3t.eth.accounts.wallet.add(account)
@@ -123,6 +125,8 @@ app.get('/nickname', (req, res) => {
     })
   })
 })
+
+app.use('/wechat',wechat);
 
 console.log('server listen on port 3000')
 app.listen(3000)
