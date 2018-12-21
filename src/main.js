@@ -22,7 +22,7 @@ if (!/code=/.test(location.search)) {
   if (res && res[1]) {
     state = res[1]
   }
-  location.href = encodeURIComponent(`https://open.weixin.qq.com/connect/oauth2/authorize?appid=${config.appid}&redirect_uri=${url}&response_type=code&scope=snsapi_userinfo${state ? '&state=' + state : ''}#wechat_redirect`)
+  location.href = `https://open.weixin.qq.com/connect/oauth2/authorize?appid=${config.appid}&redirect_uri=${url}&response_type=code&scope=snsapi_userinfo${state ? '&state=' + state : ''}#wechat_redirect`
 }
 
 new Vue({
