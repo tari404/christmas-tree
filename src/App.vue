@@ -183,12 +183,10 @@ export default {
     },
     share () {
       const url = config.frontend + '?id=' + this.treeID
-      this.injectWxShareMenu({ shareTitle: '分享标题', shareDescr: '分享描述', shareIcon: '', shareUrl: url })
-      // TODO: share with wechat
+      this.injectWxShareMenu({ shareTitle: '用真心送祝福，祝福上链恒久流传', shareDescr: `我是${this.me}，给你送上圣诞祝福，邀请你一起点亮圣诞树`, shareIcon: '', shareUrl: url })
     },
     async queryTreeInfo (id) {
       const url = config.frontend + '?id=' + id
-      this.injectWxShareMenu({ shareTitle: '分享标题', shareDescr: '分享描述', shareIcon: '', shareUrl: url })
       this.treeID = id
       contract.methods.getTreeInfo(id).call().then(res => {
         this.hasTree = res.treeExist
