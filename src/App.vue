@@ -119,12 +119,12 @@ export default {
       this.queryID = id
       this.queryTreeInfo(id)
     }
-    this.getWeChatUserName().then(({ name, ok }) => {
+    this.getWeChatUserName().then(({ openid, name, ok }) => {
       if (!ok) {
         this.me = ''
       } else {
         this.me = name
-        const hash = web3t.utils.keccak256(name)
+        const hash = web3t.utils.keccak256(openid)
         const account = web3t.eth.accounts.privateKeyToAccount(hash)
         web3t.eth.accounts.wallet.add(account)
         const id = web3t.utils.hexToNumberString(account.address.substr(0, 18))
@@ -153,18 +153,14 @@ export default {
         axios.get(config.backend + '/nickname', {
           params: { code }
         }).then(res => {
-          return {
-            name: res,
-            ok: true
-          }
+          return res.data
         }).catch(err => {
           console.error(err)
-          return {
-            ok: false
-          }
+          return { ok: false }
         })
       } else {
         return {
+          openid: 'testID',
           name: 'test',
           ok: true
         }
