@@ -7,7 +7,8 @@
     <div :style="{ 'opacity': hasTree ? 1 : .5 }" id="tree">
       <lamp v-for="(lamp, i) in treeLamps" :key="i"
         v-if="lamp.info" :info="lamp.info"
-        size="66" :offset="lampPos[i]" />
+        size="66" :offset="lampPos[i]"
+        @detail="setDetail(lamp.creater)" />
     </div>
     <draw-lamp v-if="route === 'add'" @finish="backToHome" :me="me" :treeID="treeID" :address="address" />
     <div class="notice" v-if="!me">
@@ -17,10 +18,14 @@
       <div v-if="treeLampsID.indexOf(myID) === -1 && hasTree" class="button" @touchstart="addLamp">挂上新的彩灯</div>
       <div v-if="treeID !== myID" class="button" @touchstart="jumpToMine">查看我的圣诞树</div>
       <div v-if="treeID === myID && !hasTree" class="button" @touchstart="createNewTree">创建我的圣诞树</div>
-      <div v-if="owner === me" class="button" @touchstart="share">邀请好友添加彩灯</div>
+      <div v-if="owner === me" class="button" @touchstart="share(true)">邀请好友添加彩灯</div>
     </div>
     <div v-if="status" id="tree-mask">
       <p v-html="status"></p>
+    </div>
+    <div v-if="showShareNotice" id="share-mask" @touchstart="closeShareNotice()"></div>
+    <div v-if="friend" id="friend-mask" @touchstart="setDetail('')">
+      <p>来自 {{friend}} 的彩灯</p>
     </div>
   </div>
 </template>
@@ -106,7 +111,9 @@ export default {
       treeLampsID: [],
       treeLamps: [],
       lampPos,
-      route: ''
+      route: '',
+      friend: '',
+      showShareNotice: false
     }
   },
   created () {
@@ -172,7 +179,7 @@ export default {
         })
       } else {
         return {
-          openid: 'test' + Math.floor(Math.random() * 10000),
+          openid: 'test',
           name: 'test',
           ok: true
         }
@@ -181,11 +188,20 @@ export default {
     jumpToMine () {
       this.queryTreeInfo(this.myID)
     },
-    share () {
-      const url = config.frontend + '?id=' + this.treeID
-      this.injectWxShareMenu({ shareTitle: '用真心送祝福，祝福上链恒久流传', shareDescr: `我是${this.me}，给你送上圣诞祝福，邀请你一起点亮圣诞树`, shareIcon: config.frontend+'share_icon_20181221205910.jpg', shareUrl: url })
+    share (showShareNotice) {
+      if (this.me) {
+        const url = config.frontend + '?id=' + this.treeID
+        this.injectWxShareMenu({
+          shareTitle: '用真心送祝福，祝福上链恒久流传',
+          shareDescr: `我是${this.me}，给你送上圣诞祝福，邀请你一起点亮圣诞树`,
+          shareIcon: config.frontend + 'share_icon_20181221205910.jpg',
+          shareUrl: url
+        })
+      }
+      this.showShareNotice = showShareNotice
     },
     async queryTreeInfo (id) {
+      this.share(false)
       const url = config.frontend + '?id=' + id
       this.treeID = id
       contract.methods.getTreeInfo(id).call().then(res => {
@@ -287,7 +303,12 @@ export default {
           })
         }
       })
-      
+    },
+    setDetail (friend) {
+      this.friend = friend
+    },
+    closeShareNotice () {
+      this.showShareNotice = false
     }
   },
   components: {
@@ -330,7 +351,7 @@ body
   bottom 30px
   width 400px
   text-align center
-  color #000
+  color #333
 #buttons
   position fixed
   left 0
@@ -352,4 +373,28 @@ body
   align-items center
   justify-content center
   background-color #000a
+#share-mask
+  position fixed
+  z-index 21000
+  width 100%
+  height 100%
+  top 0
+  left 0
+  background-color #000a
+  background-image url(./assets/share.png)
+  background-repeat no-repeat
+  background-position 94% 1%
+#friend-mask
+  position fixed
+  color #333
+  z-index 22000
+  width 100%
+  height 100%
+  font-size 20px
+  top 0
+  left 0
+  display flex
+  align-items center
+  justify-content center
+  background-color #fffb
 </style>

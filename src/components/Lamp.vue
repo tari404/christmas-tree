@@ -2,7 +2,7 @@
   <div class="lamp" :style="{
     'transform': `translate3d(${offset.x}px, ${offset.y}px, 0)`
   }">
-    <svg viewBox="0 0 320 320" :width="width" :height="width">
+    <svg viewBox="0 0 320 320" :width="width" :height="width" @touchstart="showInfo">
       <circle cx="160" cy="10" r="4" fill="#e0eedc" />
       <circle cx="160" cy="22" r="4" fill="#e0eedc" />
       <path d="M 160 60 l 20 0 l -8 -30 l -24 0 l -8 30 Z" fill="#e0eedc" />
@@ -124,6 +124,11 @@ export default {
     this.t1 = Number('0x' + info.substr(48, 2))
     this.t2 = Number('0x' + info.substr(54, 2))
     this.t3 = Number('0x' + info.substr(60, 2))
+  },
+  methods: {
+    showInfo () {
+      this.$emit('detail')
+    }
   },
   components: {
     Texture
