@@ -171,7 +171,7 @@ export default {
     share () {
       const url = config.frontend + '?id=' + this.treeID
       // TODO: share with wechat
-      injectWxShareMenu({shareTitle:'分享标题', shareDescr:'分享描述',shareIcon:'',shareUrl:location.href})
+      this.injectWxShareMenu({shareTitle:'分享标题', shareDescr:'分享描述',shareIcon:'',shareUrl:location.href})
     },
     async queryTreeInfo (id) {
       this.treeID = id
