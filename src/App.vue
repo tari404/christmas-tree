@@ -255,7 +255,9 @@ export default {
             signature: d.signature,
             jsApiList: [
               'updateAppMessageShareData',
-              'updateTimelineShareData'
+              'updateTimelineShareData',
+              'onMenuShareAppMessage',
+              'onMenuShareTimeline'
             ]
           })
           wx.ready(() => {
@@ -266,6 +268,17 @@ export default {
               imgUrl: shareIcon
             })
             wx.updateTimelineShareData({
+              title: shareDescr,
+              link: shareUrl,
+              imgUrl: shareIcon
+            })
+            wx.onMenuShareAppMessage({
+              title: shareTitle,
+              desc: decodeURIComponent(shareDescr),
+              link: shareUrl,
+              imgUrl: shareIcon
+            })
+            wx.onMenuShareTimeline({
               title: shareDescr,
               link: shareUrl,
               imgUrl: shareIcon
