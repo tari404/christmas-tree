@@ -320,7 +320,7 @@ export default {
       code += '99'
       const address = this.address
       sendTxAfterCheck.call(this, address, () => {
-        this.status = '创建中...'
+        this.status = '数据上链中...'
         contract.methods.addNewLamp(
           this.treeID,
           this.me,
