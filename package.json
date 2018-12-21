@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "dev": "vue-cli-service serve",
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint"
@@ -18,7 +19,8 @@
     "fft-js": "0.0.11",
     "vue": "^2.5.17",
     "vue-let-it-snow": "^1.0.0",
-    "web3": "github:truechain/web3.js#master"
+    "web3": "github:truechain/web3.js#master",
+    "weixin-js-sdk": "^1.3.3"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "^3.0.0",
