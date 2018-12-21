@@ -11,6 +11,17 @@
   "type": "function"
 }, {
   "constant": true,
+  "inputs": [],
+  "name": "topTen",
+  "outputs": [{
+    "name": "",
+    "type": "uint64[]"
+  }],
+  "payable": false,
+  "stateMutability": "view",
+  "type": "function"
+}, {
+  "constant": true,
   "inputs": [{
     "name": "_treeID",
     "type": "uint64"
@@ -115,6 +126,17 @@
   "outputs": [{
     "name": "",
     "type": "uint64"
+  }],
+  "payable": false,
+  "stateMutability": "view",
+  "type": "function"
+}, {
+  "constant": true,
+  "inputs": [],
+  "name": "treeCount",
+  "outputs": [{
+    "name": "",
+    "type": "uint256"
   }],
   "payable": false,
   "stateMutability": "view",

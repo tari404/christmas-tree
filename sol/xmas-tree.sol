@@ -17,8 +17,20 @@ contract XmasTree {
   mapping (uint64 => Lamp[]) private _treeLamps;
   mapping (uint64 => mapping (uint64 => uint256)) private _lampIndex;
 
+  uint256 private _minTopLampsCount;
+  uint64[] private _topTen;
+  mapping (uint64 => bool) private _isTopTree;
+
   constructor () public {
     founder = msg.sender;
+  }
+
+  function treeCount () public view returns (uint256) {
+    return trees.length;
+  }
+
+  function topTen () public view returns (uint64[] memory) {
+    return _topTen;
   }
 
   function genID (address _input) private pure returns (uint64) {
@@ -61,6 +73,31 @@ contract XmasTree {
     _treeLamps[_treeID].push(newLamp);
     uint256 length = _treeLamps[_treeID].length;
     _lampIndex[_treeID][userID] = length;
+    if (length >= _minTopLampsCount) {
+      if (_isTopTree[_treeID]) {
+        sort();
+      } else {
+        _isTopTree[_treeID] = true;
+        _topTen.push(_treeID);
+        sort();
+        if (_topTen.length > 10) {
+          _isTopTree[_topTen[10]] = false;
+          _topTen.length = 10;
+        }
+      }
+      _minTopLampsCount = _treeLamps[_topTen[_topTen.length - 1]].length;
+    }
+  }
+
+  function sort () private {
+    uint8 i =  uint8(_topTen.length) - 1;
+    for (; i > 0; i--) {
+      if (_treeLamps[_topTen[i]].length > _treeLamps[_topTen[i - 1]].length) {
+        uint64 temp = _topTen[i - 1];
+        _topTen[i - 1] = _topTen[i];
+        _topTen[i] = temp;
+      }
+    }
   }
 
   function getTreeInfo (uint64 _treeID) public view returns (
