@@ -1,10 +1,9 @@
 <template>
   <div id="draw-lamp">
-    <p>{{status}}</p>
     <div class="return" @touchstart="$emit('finish')">返回</div>
     <div class="dl-canvas">
-      <div class="dl-bg" :class="{ 'show-bg': showBG }" />
-      <div class="dl-fg" :class="{ 'show-fg': !showBG }" />
+      <div class="dl-bg" :class="{ 'show-bg': !ready }" />
+      <div class="dl-fg" :class="{ 'show-fg': ready }" />
       <p class="title">绘制你的彩灯</p>
       <span class="reset" @touchstart="reset">重制</span>
       <svg>
@@ -17,8 +16,9 @@
         <g class="texture"><texture :typeIndex="t3" v-if="color3" scale="1.0" :fill="color3" /></g>
       </svg>
       <canvas width="320" height="320" />
+      <div class="painting-notice" :style="{ 'opacity': noticeOpacity }">请按照虚线绘制</div>
       <transition name="config">
-        <div class="dl-config" v-if="!showBG">
+        <div class="dl-config" v-if="ready">
           <select-color :color="color0" @select="updateMainColor" />
           <select-texture :color="color1" :texture.sync="t1" @select="updateColor1" @delete="delColor(1)" />
           <select-texture :color="color2" :texture.sync="t2" @select="updateColor2" @delete="delColor(2)" />
@@ -27,6 +27,9 @@
       </transition>
     </div>
     <div v-if="ready" class="button" @touchstart="submit">确定并提交</div>
+    <div v-if="status" id="lamp-mask">
+      <p v-html="status"></p>
+    </div>
   </div>
 </template>
 
@@ -49,7 +52,7 @@ const queryBalacne = address => {
 function sendTxAfterCheck (address, cb) {
   web3t.eth.getBalance(address).then(res => {
     if (Number(res) < 20000000) {
-      this.status = '申请代币中...'
+      this.status = '申请代币中...<br>（仅第一次需要较长等待）'
       queryBalacne(address).then(cb)
     } else {
       cb()
@@ -118,7 +121,6 @@ export default {
     return {
       canvas: null,
       ctx: null,
-      showBG: true,
       canvasX: 0,
       canvasY: 0,
       points: [],
@@ -132,7 +134,8 @@ export default {
       t2: 0,
       t3: 0,
       ready: false,
-      status: '状态显示'
+      status: '',
+      noticeOpacity: 0
     }
   },
   created () {
@@ -154,6 +157,9 @@ export default {
   },
   methods: {
     processPoints () {
+      const ctx = this.ctx
+      ctx.clearRect(0, 0, 320, 320)
+
       const polar = []
       for (const point of this.points) {
         const x = point.x - 160
@@ -162,10 +168,23 @@ export default {
         const d = Math.sqrt(x * x + y * y)
         polar.push({ a, d })
       }
+
       polar.sort((a, b) => a.a - b.a)
       const p0 = polar[0]
       const pn = polar[polar.length - 1]
-      const ddis = (pn.d - p0.d) * p0.a / (p0.a + Math.PI * 2 - pn.a) + p0.d
+      let gap = p0.a + Math.PI * 2 - pn.a
+      const ddis = (pn.d - p0.d) * p0.a / (gap) + p0.d
+      polar.reduce((prev, current) => {
+        gap = Math.max(current.a - prev.a, gap)
+        return current
+      }, p0)
+      if (gap > 0.5) {
+        this.noticeOpacity = 1
+        setTimeout(() => {
+          this.noticeOpacity = 0
+        }, 1000)
+        return
+      }
       polar.unshift({ a: 0, d: ddis })
       polar.push({ a: Math.PI * 2, d: ddis })
       const disS = []
@@ -182,6 +201,26 @@ export default {
         }
         disS.push(Math.round(ddis))
       }
+      const avg = disS.reduce((sum, current) => {
+        return sum + current / _S
+      }, 0)
+      if (Math.abs(avg - 118) > 15) {
+        this.noticeOpacity = 1
+        setTimeout(() => {
+          this.noticeOpacity = 0
+        }, 1000)
+        return
+      }
+      const variance = disS.reduce((sum, current) => {
+        return sum + Math.pow(current - 118, 2) / _S
+      }, 0)
+      if (variance > 50) {
+        this.noticeOpacity = 1
+        setTimeout(() => {
+          this.noticeOpacity = 0
+        }, 1000)
+        return
+      }
 
       this.disS = disS
       this.ready = true
@@ -195,7 +234,6 @@ export default {
 
       const ctrlPointS = genControlPoints(pointS)
 
-      const ctx = this.ctx
       ctx.beginPath()
       ctx.save()
       ctx.translate(160, 172)
@@ -211,7 +249,6 @@ export default {
       ctx.closePath()
       ctx.restore()
       ctx.save()
-      ctx.clearRect(0, 0, 320, 320)
       ctx.strokeStyle = '#e0eedc'
       ctx.stroke()
       ctx.restore()
@@ -220,13 +257,14 @@ export default {
     },
     reset () {
       this.ready = false
-      this.showBG = true
       this.points = []
       this.ctx.clearRect(0, 0, 320, 320)
       this.d = ''
     },
     beginPainting (e) {
-      this.reset()
+      if (this.ready) {
+        return
+      }
       const touch = e.touches[0]
       const x = touch.clientX - this.canvasX
       const y = touch.clientY - this.canvasY
@@ -247,7 +285,9 @@ export default {
       ctx.stroke()
     },
     endPainting () {
-      this.showBG = false
+      if (this.ready) {
+        return
+      }
       this.canvas.removeEventListener('touchmove', this.painting)
       this.processPoints()
     },
@@ -290,13 +330,18 @@ export default {
           gas: 2000000,
           gasPrice: 1
         }).then(res => {
-          this.status = '完成'
+          this.status = '创建完成'
+          setTimeout(() => {
+            this.$emit('finish')
+          }, 2000)
         }).catch(err => {
-          this.status = '失败'
+          this.status = '创建失败，请稍等刷新重试'
           console.error(err)
+          setTimeout(() => {
+            this.status = ''
+          }, 2000)
         })
       })
-      // this.$emit('finish')
     }
   },
   components: {
@@ -386,6 +431,13 @@ svg
     mask url(#svg-mask)
     g
       transform-origin 160px 172px
+.painting-notice
+  position absolute
+  bottom 10px
+  left 0
+  width 100%
+  text-align center
+  transition opacity .6s
 .dl-config
   position absolute
   width 320px
@@ -406,4 +458,15 @@ svg
   bottom 20px
   left 50%
   transform translate3d(-50%, 0, 0)
+#lamp-mask
+  position fixed
+  z-index 20000
+  width 100%
+  height 100%
+  top 0
+  left 0
+  display flex
+  align-items center
+  justify-content center
+  background-color #000a
 </style>

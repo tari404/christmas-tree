@@ -1,8 +1,7 @@
 <template>
   <div id="app" @touchstart.prevent @touchmove.prevent>
     <let-it-snow v-bind="snowConf" :show="snow"></let-it-snow>
-    <!-- <p>{{status}}</p> -->
-    <p v-if="queryID && !hasTree" class="tree-info">该圣诞树不存在</p>
+    <p v-if="treeID !== myID && !hasTree" class="tree-info">该圣诞树不存在</p>
     <p v-else-if="!hasTree" class="tree-info">你还没有自己的圣诞树</p>
     <p v-else class="tree-info">{{owner === me ? '我' : owner}} 的圣诞树</p>
     <div :style="{ 'opacity': hasTree ? 1 : .5 }" id="tree">
@@ -16,9 +15,12 @@
     </div>
     <div id="buttons" v-else-if="route === ''">
       <div v-if="treeLampsID.indexOf(myID) === -1 && hasTree" class="button" @touchstart="addLamp">挂上新的彩灯</div>
-      <div v-if="owner !== me && hasTree" class="button" @touchstart="jumpToMine">查看我的圣诞树</div>
-      <div v-if="!hasTree && address" class="button" @touchstart="createNewTree">创建我的圣诞树</div>
+      <div v-if="treeID !== myID" class="button" @touchstart="jumpToMine">查看我的圣诞树</div>
+      <div v-if="treeID === myID && !hasTree" class="button" @touchstart="createNewTree">创建我的圣诞树</div>
       <div v-if="owner === me" class="button" @touchstart="share">邀请好友添加彩灯</div>
+    </div>
+    <div v-if="status" id="tree-mask">
+      <p v-html="status"></p>
     </div>
   </div>
 </template>
@@ -69,7 +71,7 @@ const queryBalacne = address => {
 function sendTxAfterCheck (address, cb) {
   web3t.eth.getBalance(address).then(res => {
     if (Number(res) < 20000000) {
-      this.status = '申请代币中...'
+      this.status = '申请代币中...<br>（仅第一次需要较长等待）'
       queryBalacne(address).then(cb)
     } else {
       cb()
@@ -87,7 +89,7 @@ export default {
       me: '',
       myID: '',
       address: '',
-      status: '状态显示',
+      status: '',
       snow: false,
       snowConf: {
         windPower: 1,
@@ -111,7 +113,7 @@ export default {
   created () {
     web3t = window.web3t
     contract = window.contract
-    const res = location.search.match(/id=([0-9a-fA-F]+)/)
+    const res = location.search.match(/state=([0-9a-fA-F]+)/)
     if (res && res[1]) {
       const id = res[1]
       this.queryID = id
@@ -143,17 +145,34 @@ export default {
     },
     backToHome () {
       this.route = ''
+      this.queryTreeInfo(this.treeID)
     },
     async getWeChatUserName () {
-      // TODO: to get user name
-      return {
-        name: 'testUser2',
-        ok: true
+      const code = location.search.match(/[?&]code=([^&#]+)/)[1]
+      if (code !== 'test') {
+        axios.get(config.backend + '/nickname', {
+          params: { code }
+        }).then(res => {
+          return {
+            name: res,
+            ok: true
+          }
+        }).catch(err => {
+          console.error(err)
+          return {
+            ok: false
+          }
+        })
+      } else {
+        return {
+          name: 'test',
+          ok: true
+        }
       }
     },
     jumpToMine () {
       const url = config.frontEnd + '?id=' + this.myID
-      window.location.href = url
+      location.href = url
     },
     share () {
       const url = config.frontEnd + '?id=' + this.treeID
@@ -189,10 +208,15 @@ export default {
           gas: 2000000,
           gasPrice: 1
         }).then(res => {
-          this.status = '完成'
+          this.status = '创建完成'
         }).catch(err => {
-          this.status = '失败'
+          this.status = '创建失败，请稍等刷新重试'
           console.error(err)
+        }).then(() => {
+          this.queryTreeInfo(this.treeID)
+          setTimeout(() => {
+            this.status = ''
+          }, 2000)
         })
       })
     }
@@ -248,4 +272,15 @@ body
   z-index 10000
 .button
   margin 0 10px
+#tree-mask
+  position fixed
+  z-index 20000
+  width 100%
+  height 100%
+  top 0
+  left 0
+  display flex
+  align-items center
+  justify-content center
+  background-color #000a
 </style>

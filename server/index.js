@@ -1,6 +1,7 @@
 const express = require('express')
 const bodyParser = require('body-parser')
 const Web3 = require('web3')
+const axios = require('axios')
 
 const config = require('./config.json')
 
@@ -83,6 +84,33 @@ app.post('/', (req, res) => {
     } else {
       sendTransaction(address, nonce++, res)
     }
+  })
+})
+
+app.get('/nickname', (req, res) => {
+  const code = req.code
+  if (!code) {
+    res.send(400)
+  }
+  axios.get('https://api.weixin.qq.com/sns/oauth2/access_token', {
+    appid: config.appid,
+    secret: config.secret,
+    code,
+    grant_type: 'authorization_code'
+  }).then(token => {
+    if (token.errcode) {
+      res.send(400)
+    }
+    return axios.get('https://api.weixin.qq.com/sns/userinfo', {
+      access_token: token.access_token,
+      openid: token.openid,
+      lang: 'zh_CN'
+    })
+  }).then(userinfo => {
+    if (userinfo.errcode) {
+      res.send(400)
+    }
+    res.send(userinfo.nickname)
   })
 })
 
