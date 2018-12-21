@@ -145,9 +145,9 @@ export default {
   mounted () {
     const canvas = this.$el.querySelector('canvas')
     this.canvas = canvas
-    const { x, y } = canvas.getBoundingClientRect()
-    this.canvasX = x
-    this.canvasY = y
+    const { left, top } = canvas.getBoundingClientRect()
+    this.canvasX = left
+    this.canvasY = top
     const ctx = canvas.getContext('2d')
     ctx.strokeStyle = '#8de462'
     ctx.lineWidth = 4
