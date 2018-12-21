@@ -17,6 +17,7 @@
     "body-parser": "^1.18.3",
     "express": "^4.16.4",
     "fft-js": "0.0.11",
+    "request": "^2.88.0",
     "vue": "^2.5.17",
     "vue-let-it-snow": "^1.0.0",
     "web3": "github:truechain/web3.js#master",
