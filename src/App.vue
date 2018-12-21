@@ -171,9 +171,10 @@ export default {
     share () {
       const url = config.frontend + '?id=' + this.treeID
       // TODO: share with wechat
-      this.injectWxShareMenu({shareTitle:'分享标题', shareDescr:'分享描述',shareIcon:'',shareUrl:location.href})
     },
     async queryTreeInfo (id) {
+      const url = config.frontend + '?id=' + id
+      this.injectWxShareMenu({ shareTitle: '分享标题', shareDescr: '分享描述', shareIcon: '', shareUrl: url })
       this.treeID = id
       contract.methods.getTreeInfo(id).call().then(res => {
         this.hasTree = res.treeExist
