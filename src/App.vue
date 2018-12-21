@@ -162,7 +162,7 @@ export default {
         return axios.get(config.backend + 'nickname', {
           params: { code }
         }).then(res => {
-          sessionStorage.setItem('xmas-openid', res.data.penid)
+          sessionStorage.setItem('xmas-openid', res.data.openid)
           sessionStorage.setItem('xmas-name', res.data.name)
           return res.data
         }).catch(err => {
@@ -231,7 +231,7 @@ export default {
       let signUrl = encodeURIComponent(location.href.split("#")[0])
       let fd = new FormData()
       fd.append("url", signUrl);
-      axios.post("//sc.truescan.net/api/unauth/weixin/getWxSign",fd).then(res=>{
+      axios.post("http://sc.truescan.net/api/unauth/weixin/getWxSign",fd).then(res=>{
         console.log('sign url con is',res)
         if (res.data.code === 200) {
           let d = res.data.result
