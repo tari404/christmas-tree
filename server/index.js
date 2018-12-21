@@ -5,7 +5,7 @@ const axios = require('axios')
 
 const config = require('./config.json')
 
-const wechat = require('./wechat.js')
+const request = require('request')
 
 const web3t = new Web3('https://api.truescan.net/rpc/')
 const account = web3t.eth.accounts.privateKeyToAccount(config.privKey)
@@ -126,7 +126,11 @@ app.get('/nickname', (req, res) => {
   })
 })
 
-app.use('/wechat',wechat);
+app.get('/wx-sign', (req, res) => {
+  let signUrl = encodeURIComponent(req.query.signUrl) 
+  req.pipe(request(`http://sc.truescan.net/api/unauth/weixin/getWxSign?url=${signUrl}`)).pipe(res)
+})
+
 
 console.log('server listen on port 3000')
 app.listen(3000)

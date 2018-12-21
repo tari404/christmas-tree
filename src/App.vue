@@ -228,14 +228,12 @@ export default {
     // 向微信分享菜单注入分享内容
     injectWxShareMenu({shareUrl,shareTitle,shareDescr,shareIcon}) {
       let signUrl = encodeURIComponent(location.href.split("#")[0])
-      let fd = new FormData()
-      fd.append("url", signUrl);
-      axios.post("http://sc.truescan.net/api/unauth/weixin/getWxSign",fd).then(res=>{
+      axios.get(config.backend+'/wx-sign?signUrl='+signUrl).then(res=>{
         console.log('sign url con is',res)
         if (res.data.code === 200) {
           let d = res.data.result
           wx.config({
-            debug: false, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
+            debug: true, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
             appId: d.appId, // 必填，公众号的唯一标识
             timestamp: d.timestamp, // 必填，生成签名的时间戳
             nonceStr: d.nonceStr, // 必填，生成签名的随机串
