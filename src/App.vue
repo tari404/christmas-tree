@@ -150,7 +150,7 @@ export default {
     async getWeChatUserName () {
       const code = location.search.match(/[?&]code=([^&#]+)/)[1]
       if (code !== 'test') {
-        axios.get(config.backend + '/nickname', {
+        return axios.get(config.backend + '/nickname', {
           params: { code }
         }).then(res => {
           return res.data
@@ -167,11 +167,11 @@ export default {
       }
     },
     jumpToMine () {
-      const url = config.frontEnd + '?id=' + this.myID
-      location.href = url
+      this.queryTreeInfo(this.myID)
+      history.replaceState(null, null, '/?id=' + this.myID)
     },
     share () {
-      const url = config.frontEnd + '?id=' + this.treeID
+      const url = config.frontend + '?id=' + this.treeID
       console.log(url)
       // TODO: share with wechat
     },
@@ -210,6 +210,7 @@ export default {
           console.error(err)
         }).then(() => {
           this.queryTreeInfo(this.treeID)
+          history.replaceState(null, null, '/?id=' + this.treeID)
           setTimeout(() => {
             this.status = ''
           }, 2000)
