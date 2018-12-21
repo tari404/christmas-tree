@@ -16,14 +16,13 @@ const contract = new web3t.eth.Contract(abi, '0xC2811eF426c9b30B9d94E4f4DF9b2DfF
 window.contract = contract
 
 if (!/code=/.test(location.search)) {
-  console.log(config.appid)
-  const url = config.frontEnd
-  const res = location.search.match(/id=([0-9a-fA-F]+)/)
+  const url = config.frontend
+  const res = location.search.match(/id=([0-9]+)/)
   let state = ''
   if (res && res[1]) {
     state = res[1]
   }
-  location.href = `https://open.weixin.qq.com/connect/oauth2/authorize?appid=${config.appid}&redirect_uri=${url}&response_type=code&scope=snsapi_userinfo${state ? '&state=' + state : ''}#wechat_redirect`
+  location.href = encodeURIComponent(`https://open.weixin.qq.com/connect/oauth2/authorize?appid=${config.appid}&redirect_uri=${url}&response_type=code&scope=snsapi_userinfo${state ? '&state=' + state : ''}#wechat_redirect`)
 }
 
 new Vue({

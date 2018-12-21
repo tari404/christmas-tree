@@ -102,7 +102,6 @@ export default {
           '/snow_s.png'
         ]
       },
-      loading: true,
       hasTree: false,
       treeLampsID: [],
       treeLamps: [],
@@ -113,10 +112,9 @@ export default {
   created () {
     web3t = window.web3t
     contract = window.contract
-    const res = location.search.match(/state=([0-9a-fA-F]+)/)
+    const res = location.search.match(/state=([0-9]+)/)
     if (res && res[1]) {
       const id = res[1]
-      history.replaceState(null, null, '/?id=' + id)
       this.queryID = id
       this.queryTreeInfo(id)
     }
@@ -132,7 +130,6 @@ export default {
         this.address = account.address
         this.myID = id
         if (!this.queryID) {
-          history.replaceState(null, null, '/?id=' + id)
           this.queryTreeInfo(id)
         }
       }
@@ -152,7 +149,7 @@ export default {
     async getWeChatUserName () {
       const code = location.search.match(/[?&]code=([^&#]+)/)[1]
       if (code !== 'test') {
-        return axios.get(config.backend + '/nickname', {
+        return axios.get(config.backend + 'nickname', {
           params: { code }
         }).then(res => {
           return res.data
@@ -170,19 +167,16 @@ export default {
     },
     jumpToMine () {
       this.queryTreeInfo(this.myID)
-      history.replaceState(null, null, '/?id=' + this.myID)
     },
     share () {
       const url = config.frontend + '?id=' + this.treeID
-      history.replaceState(null, null, '/?id=' + this.myID)
+      alert(url)
       // TODO: share with wechat
       injectWxShareMenu({shareTitle:'分享标题', shareDescr:'分享描述',shareIcon:'',shareUrl:location.href})
     },
     async queryTreeInfo (id) {
       this.treeID = id
-      this.loading = true
       contract.methods.getTreeInfo(id).call().then(res => {
-        this.loading = false
         this.hasTree = res.treeExist
         this.owner = res.owner
         this.treeLampsID = res.lampIDs
@@ -213,7 +207,6 @@ export default {
           console.error(err)
         }).then(() => {
           this.queryTreeInfo(this.treeID)
-          history.replaceState(null, null, '/?id=' + this.treeID)
           setTimeout(() => {
             this.status = ''
           }, 2000)

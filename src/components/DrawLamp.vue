@@ -214,7 +214,7 @@ export default {
       const variance = disS.reduce((sum, current) => {
         return sum + Math.pow(current - 118, 2) / _S
       }, 0)
-      if (variance > 50) {
+      if (variance > 100) {
         this.noticeOpacity = 1
         setTimeout(() => {
           this.noticeOpacity = 0
