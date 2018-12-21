@@ -176,6 +176,7 @@ export default {
       const url = config.frontend + '?id=' + this.treeID
       history.replaceState(null, null, '/?id=' + this.myID)
       // TODO: share with wechat
+      injectWxShareMenu({shareTitle:'分享标题', shareDescr:'分享描述',shareIcon:'',shareUrl:location.href})
     },
     async queryTreeInfo (id) {
       this.treeID = id
@@ -224,58 +225,60 @@ export default {
       let signUrl = encodeURIComponent(location.href.split("#")[0])
       axios.post(config.backend + '/wechat/getjscfg',{url:signUrl}).then(res=>{
         console.log('sign url con is',res)
-      })
-      wx.config({
-        debug: false, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
-        appId: '', // 必填，公众号的唯一标识
-        timestamp: '', // 必填，生成签名的时间戳
-        nonceStr: '', // 必填，生成签名的随机串
-        signature: '', // 必填，签名
-        jsApiList: ["onMenuShareAppMessage", "onMenuShareTimeline", "onMenuShareQQ"] 
-      })
-      wx.ready(() => {
-        wx.onMenuShareAppMessage({
-          title: shareTitle,
-          desc: decodeURIComponent(shareDescr),
-          link: shareUrl, // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
-          imgUrl: shareIcon, // 分享图标
-          success: ()=> {
-            // 用户点击了分享后执行的回调函数
-            alert("分享微信好友成功")
-          },
-          cancel: ()=> {
-            // 用户取消分享后执行的回调函数
-            alert("取消分享")
-          }
+        let d = res.data
+        wx.config({
+          debug: false, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
+          appId: config.appid, // 必填，公众号的唯一标识
+          timestamp: d.timestamp, // 必填，生成签名的时间戳
+          nonceStr: d.nonceStr, // 必填，生成签名的随机串
+          signature: d.signature, // 必填，签名
+          jsApiList: ["onMenuShareAppMessage", "onMenuShareTimeline", "onMenuShareQQ"] 
         })
-        wx.onMenuShareTimeline({
-          title: shareTitle,
-          link: shareUrl, // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
-          imgUrl: shareIcon, // 分享图标
-          success: ()=> {
-            // 用户点击了分享后执行的回调函数
-            alert("分享微信好友成功")
-          },
-          cancel: ()=> {
-            // 用户取消分享后执行的回调函数
-            alert("取消分享")
-          }
-        })
-        wx.onMenuShareQQ({
-          title: shareTitle, 
-          desc: decodeURIComponent(shareDescr),
-          link: shareUrl,
-          imgUrl: shareIcon, 
-          success: ()=> {
-            // 用户确认分享后执行的回调函数
-            alert("分享QQ好友成功")
-          },
-          cancel: ()=> {
-            // 用户取消分享后执行的回调函数
-            alert("取消分享")
-          }
+        wx.ready(() => {
+          wx.onMenuShareAppMessage({
+            title: shareTitle,
+            desc: decodeURIComponent(shareDescr),
+            link: shareUrl, // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
+            imgUrl: shareIcon, // 分享图标
+            success: ()=> {
+              // 用户点击了分享后执行的回调函数
+              alert("分享微信好友成功")
+            },
+            cancel: ()=> {
+              // 用户取消分享后执行的回调函数
+              alert("取消分享")
+            }
+          })
+          wx.onMenuShareTimeline({
+            title: shareTitle,
+            link: shareUrl, // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
+            imgUrl: shareIcon, // 分享图标
+            success: ()=> {
+              // 用户点击了分享后执行的回调函数
+              alert("分享微信好友成功")
+            },
+            cancel: ()=> {
+              // 用户取消分享后执行的回调函数
+              alert("取消分享")
+            }
+          })
+          wx.onMenuShareQQ({
+            title: shareTitle, 
+            desc: decodeURIComponent(shareDescr),
+            link: shareUrl,
+            imgUrl: shareIcon, 
+            success: ()=> {
+              // 用户确认分享后执行的回调函数
+              alert("分享QQ好友成功")
+            },
+            cancel: ()=> {
+              // 用户取消分享后执行的回调函数
+              alert("取消分享")
+            }
+          })
         })
       })
+      
     }
   },
   components: {
