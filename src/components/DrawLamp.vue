@@ -265,6 +265,7 @@ export default {
       if (this.ready) {
         return
       }
+      this.reset()
       const touch = e.touches[0]
       const x = touch.clientX - this.canvasX
       const y = touch.clientY - this.canvasY

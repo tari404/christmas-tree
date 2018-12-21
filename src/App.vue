@@ -159,7 +159,7 @@ export default {
         })
       } else {
         return {
-          openid: 'testID',
+          openid: 'test' + Math.floor(Math.random() * 10000),
           name: 'test',
           ok: true
         }
@@ -170,7 +170,6 @@ export default {
     },
     share () {
       const url = config.frontend + '?id=' + this.treeID
-      alert(url)
       // TODO: share with wechat
       this.injectWxShareMenu({shareTitle:'分享标题', shareDescr:'分享描述',shareIcon:'',shareUrl:location.href})
     },
