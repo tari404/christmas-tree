@@ -1,19 +1,24 @@
 <template>
   <div id="app" @touchstart.prevent @touchmove.prevent>
     <let-it-snow v-bind="snowConf" :show="snow"></let-it-snow>
-    <p v-if="!hasTree" class="tree-info">你还没有自己的圣诞树</p>
+    <!-- <p>{{status}}</p> -->
+    <p v-if="queryID && !hasTree" class="tree-info">该圣诞树不存在</p>
+    <p v-else-if="!hasTree" class="tree-info">你还没有自己的圣诞树</p>
     <p v-else class="tree-info">{{owner === me ? '我' : owner}} 的圣诞树</p>
     <div :style="{ 'opacity': hasTree ? 1 : .5 }" id="tree">
-      <lamp v-for="(info, i) in treeLamps" :key="i" :info="info" size="66" :offset="lampPos[i]" />
+      <lamp v-for="(lamp, i) in treeLamps" :key="i"
+        v-if="lamp.info" :info="lamp.info"
+        size="66" :offset="lampPos[i]" />
     </div>
-    <draw-lamp v-if="route === 'add'" @finish="backToHome" />
+    <draw-lamp v-if="route === 'add'" @finish="backToHome" :me="me" :treeID="treeID" :address="address" />
     <div class="notice" v-if="!me">
       您现在以游客身份浏览
     </div>
     <div id="buttons" v-else-if="route === ''">
-      <div v-if="owner !== me && hasTree" class="button" @touchstart="addLamp">帮好友挂上彩灯</div>
-      <div v-if="owner !== me && hasTree" class="button">查看我的圣诞树</div>
-      <div v-if="!hasTree" class="button" @touchstart="createNewTree">创建我的圣诞树</div>
+      <div v-if="treeLampsID.indexOf(myID) === -1 && hasTree" class="button" @touchstart="addLamp">挂上新的彩灯</div>
+      <div v-if="owner !== me && hasTree" class="button" @touchstart="jumpToMine">查看我的圣诞树</div>
+      <div v-if="!hasTree && address" class="button" @touchstart="createNewTree">创建我的圣诞树</div>
+      <div v-if="owner === me" class="button" @touchstart="share">邀请好友添加彩灯</div>
     </div>
   </div>
 </template>
@@ -21,6 +26,11 @@
 <script>
 import Lamp from '@/components/Lamp'
 import DrawLamp from '@/components/DrawLamp'
+import axios from 'axios'
+
+import config from '../config.json'
+
+let web3t, contract
 
 const lampPos = [
   { x: -16, y: 148 },
@@ -35,12 +45,49 @@ const lampPos = [
   { x: 40, y: 428 }
 ]
 
+class LampInfo {
+  constructor (treeID, lampID) {
+    this.treeID = treeID
+    this.lampID = lampID
+    this.creater = ''
+    this.info = ''
+    this.score = 0
+    contract.methods.getLampInfo(treeID, lampID).call().then(res => {
+      this.creater = res.creater
+      this.info = res.info
+      this.score = res.score
+    })
+  }
+}
+
+const queryBalacne = address => {
+  return axios.post(config.backend, {
+    address
+  })
+}
+
+function sendTxAfterCheck (address, cb) {
+  web3t.eth.getBalance(address).then(res => {
+    if (Number(res) < 20000000) {
+      this.status = '申请代币中...'
+      queryBalacne(address).then(cb)
+    } else {
+      cb()
+    }
+  })
+}
+
 export default {
   name: 'App',
   data () {
     return {
+      queryID: '',
+      treeID: '',
       owner: '',
       me: '',
+      myID: '',
+      address: '',
+      status: '状态显示',
       snow: false,
       snowConf: {
         windPower: 1,
@@ -55,38 +102,35 @@ export default {
       },
       loading: true,
       hasTree: false,
+      treeLampsID: [],
       treeLamps: [],
       lampPos,
       route: ''
     }
   },
   created () {
-    const res = location.search.match(/user=([0-9a-fA-F]+)/)
+    web3t = window.web3t
+    contract = window.contract
+    const res = location.search.match(/id=([0-9a-fA-F]+)/)
     if (res && res[1]) {
-      // eslint-disable-next-line
-      const user = res[1]
-      console.log(user)
-      // TODO: use web3 to get tree info from contract
-      this.hasTree = true
-      this.owner = 'XXX'
-      this.treeLamps = [
-        '0x757575757575757575757575757575757575757518d00e54002254000bda0299',
-        '0x6f716e6f7171706f7170707376736e6d747476726360714e036e4e027c5a0099',
-        '0x7878787878787878787878787878787878787878b2cca35601a8be019c540399',
-        '0x7777777777777777777777777777777777777777004c00380000000000000099',
-        '0x7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f42d48a580096d4036f520499',
-        '0x777c744838383c556c7578757a77727370747b7802c0b450040000000fe00399',
-        '0x535862553a7120713b382b2777796a24305265595dd4955800b3d80395d60499',
-        '0x51322e4c5a585e4b2d472a5c39476e4b4b38261069c8404c0478d2027fd60299',
-        '0x747474747474747474747474747474747474747447de3dc6000000004cb20299',
-        '0x4d4c4c4c83866015171e337d9da99c8a7c715f520fc408560018d804204e0399'
-      ]
+      const id = res[1]
+      this.queryID = id
+      this.queryTreeInfo(id)
     }
     this.getWeChatUserName().then(({ name, ok }) => {
       if (!ok) {
         this.me = ''
       } else {
         this.me = name
+        const hash = web3t.utils.keccak256(name)
+        const account = web3t.eth.accounts.privateKeyToAccount(hash)
+        web3t.eth.accounts.wallet.add(account)
+        const id = web3t.utils.hexToNumberString(account.address.substr(0, 18))
+        this.address = account.address
+        this.myID = id
+        if (!this.queryID) {
+          this.queryTreeInfo(id)
+        }
       }
     })
   },
@@ -103,12 +147,54 @@ export default {
     async getWeChatUserName () {
       // TODO: to get user name
       return {
-        name: 'testUser',
+        name: 'testUser2',
         ok: true
       }
     },
+    jumpToMine () {
+      const url = config.frontEnd + '?id=' + this.myID
+      window.location.href = url
+    },
+    share () {
+      const url = config.frontEnd + '?id=' + this.treeID
+      console.log(url)
+      // TODO: share with wechat
+    },
+    async queryTreeInfo (id) {
+      this.treeID = id
+      this.loading = true
+      contract.methods.getTreeInfo(id).call().then(res => {
+        this.loading = false
+        this.hasTree = res.treeExist
+        this.owner = res.owner
+        this.treeLampsID = res.lampIDs
+        this.treeLamps = []
+        for (let i = 0; i < res.lampIDs.length; i++) {
+          if (i >= 10) {
+            break
+          }
+          this.treeLamps.push(new LampInfo(this.treeID, res.lampIDs[i]))
+        }
+      })
+    },
     createNewTree () {
-      // TODO: create tree by username
+      const address = this.address
+      if (!address) {
+        return
+      }
+      sendTxAfterCheck.call(this, address, () => {
+        this.status = '创建中...'
+        contract.methods.createNewTree(this.me).send({
+          from: this.address,
+          gas: 2000000,
+          gasPrice: 1
+        }).then(res => {
+          this.status = '完成'
+        }).catch(err => {
+          this.status = '失败'
+          console.error(err)
+        })
+      })
     }
   },
   components: {

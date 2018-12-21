@@ -1,0 +1,127 @@
+[{
+  "constant": true,
+  "inputs": [],
+  "name": "userCount",
+  "outputs": [{
+    "name": "",
+    "type": "uint256"
+  }],
+  "payable": false,
+  "stateMutability": "view",
+  "type": "function"
+}, {
+  "constant": true,
+  "inputs": [{
+    "name": "_treeID",
+    "type": "uint64"
+  }, {
+    "name": "_lampID",
+    "type": "uint64"
+  }],
+  "name": "getLampInfo",
+  "outputs": [{
+    "name": "creater",
+    "type": "string"
+  }, {
+    "name": "info",
+    "type": "bytes32"
+  }, {
+    "name": "score",
+    "type": "uint8"
+  }],
+  "payable": false,
+  "stateMutability": "view",
+  "type": "function"
+}, {
+  "constant": false,
+  "inputs": [],
+  "name": "kill",
+  "outputs": [],
+  "payable": false,
+  "stateMutability": "nonpayable",
+  "type": "function"
+}, {
+  "constant": false,
+  "inputs": [{
+    "name": "_treeID",
+    "type": "uint64"
+  }, {
+    "name": "_creater",
+    "type": "string"
+  }, {
+    "name": "_info",
+    "type": "bytes32"
+  }, {
+    "name": "_score",
+    "type": "uint8"
+  }],
+  "name": "addNewLamp",
+  "outputs": [],
+  "payable": false,
+  "stateMutability": "nonpayable",
+  "type": "function"
+}, {
+  "constant": true,
+  "inputs": [],
+  "name": "founder",
+  "outputs": [{
+    "name": "",
+    "type": "address"
+  }],
+  "payable": false,
+  "stateMutability": "view",
+  "type": "function"
+}, {
+  "constant": false,
+  "inputs": [{
+    "name": "_username",
+    "type": "string"
+  }],
+  "name": "createNewTree",
+  "outputs": [],
+  "payable": false,
+  "stateMutability": "nonpayable",
+  "type": "function"
+}, {
+  "constant": true,
+  "inputs": [{
+    "name": "_treeID",
+    "type": "uint64"
+  }],
+  "name": "getTreeInfo",
+  "outputs": [{
+    "name": "treeExist",
+    "type": "bool"
+  }, {
+    "name": "owner",
+    "type": "string"
+  }, {
+    "name": "lampIDs",
+    "type": "uint64[]"
+  }, {
+    "name": "scores",
+    "type": "uint8[]"
+  }],
+  "payable": false,
+  "stateMutability": "view",
+  "type": "function"
+}, {
+  "constant": true,
+  "inputs": [{
+    "name": "",
+    "type": "uint256"
+  }],
+  "name": "trees",
+  "outputs": [{
+    "name": "",
+    "type": "uint64"
+  }],
+  "payable": false,
+  "stateMutability": "view",
+  "type": "function"
+}, {
+  "inputs": [],
+  "payable": false,
+  "stateMutability": "nonpayable",
+  "type": "constructor"
+}]

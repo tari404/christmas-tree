@@ -1,5 +1,6 @@
 <template>
   <div id="draw-lamp">
+    <p>{{status}}</p>
     <div class="return" @touchstart="$emit('finish')">返回</div>
     <div class="dl-canvas">
       <div class="dl-bg" :class="{ 'show-bg': showBG }" />
@@ -33,6 +34,28 @@
 import { Texture } from '../texture'
 import SelectColor from './SelectColor'
 import SelectTexture from './SelectTexture'
+import axios from 'axios'
+
+import config from '../../config.json'
+
+let web3t, contract
+
+const queryBalacne = address => {
+  return axios.post(config.backend, {
+    address
+  })
+}
+
+function sendTxAfterCheck (address, cb) {
+  web3t.eth.getBalance(address).then(res => {
+    if (Number(res) < 20000000) {
+      this.status = '申请代币中...'
+      queryBalacne(address).then(cb)
+    } else {
+      cb()
+    }
+  })
+}
 
 const _S = 20 // subdivision
 const PI_S = 2 * Math.PI / _S
@@ -90,6 +113,7 @@ const encodeColor = (hslString) => {
 
 export default {
   name: 'DrawLamp',
+  props: ['me', 'treeID', 'address'],
   data () {
     return {
       canvas: null,
@@ -107,8 +131,13 @@ export default {
       t1: 0,
       t2: 0,
       t3: 0,
-      ready: false
+      ready: false,
+      status: '状态显示'
     }
+  },
+  created () {
+    web3t = window.web3t
+    contract = window.contract
   },
   mounted () {
     const canvas = this.$el.querySelector('canvas')
@@ -248,7 +277,25 @@ export default {
       code += encodeColor(this.color2) + this.t2.toString(16).padStart(2, '0')
       code += encodeColor(this.color3) + this.t3.toString(16).padStart(2, '0')
       code += '99'
-      console.log(code)
+      const address = this.address
+      sendTxAfterCheck.call(this, address, () => {
+        this.status = '创建中...'
+        contract.methods.addNewLamp(
+          this.treeID,
+          this.me,
+          code,
+          99
+        ).send({
+          from: address,
+          gas: 2000000,
+          gasPrice: 1
+        }).then(res => {
+          this.status = '完成'
+        }).catch(err => {
+          this.status = '失败'
+          console.error(err)
+        })
+      })
       // this.$emit('finish')
     }
   },
