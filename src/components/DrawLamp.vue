@@ -52,7 +52,7 @@ const queryBalacne = address => {
 function sendTxAfterCheck (address, cb) {
   web3t.eth.getBalance(address).then(res => {
     if (Number(res) < 20000000) {
-      this.status = '申请代币中...<br>（仅第一次需要较长等待）'
+      this.status = '生成能量中...<br>（仅第一次需要较长等待）'
       queryBalacne(address).then(cb)
     } else {
       cb()
