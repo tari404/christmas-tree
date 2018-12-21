@@ -178,7 +178,6 @@ export default {
         gap = Math.max(current.a - prev.a, gap)
         return current
       }, p0)
-      alert(gap)
       if (gap > 0.5) {
         this.noticeOpacity = 1
         setTimeout(() => {
@@ -205,7 +204,6 @@ export default {
       const avg = disS.reduce((sum, current) => {
         return sum + current / _S
       }, 0)
-      alert(avg)
       if (Math.abs(avg - 118) > 15) {
         this.noticeOpacity = 1
         setTimeout(() => {
@@ -216,8 +214,7 @@ export default {
       const variance = disS.reduce((sum, current) => {
         return sum + Math.pow(current - 118, 2) / _S
       }, 0)
-      alert(variance)
-      if (variance > 50) {
+      if (variance > 100) {
         this.noticeOpacity = 1
         setTimeout(() => {
           this.noticeOpacity = 0

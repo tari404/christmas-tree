@@ -102,7 +102,6 @@ export default {
           '/snow_s.png'
         ]
       },
-      loading: true,
       hasTree: false,
       treeLampsID: [],
       treeLamps: [],
@@ -113,7 +112,7 @@ export default {
   created () {
     web3t = window.web3t
     contract = window.contract
-    const res = location.search.match(/state=([0-9a-fA-F]+)/)
+    const res = location.search.match(/state=([0-9]+)/)
     if (res && res[1]) {
       const id = res[1]
       this.queryID = id
@@ -150,7 +149,7 @@ export default {
     async getWeChatUserName () {
       const code = location.search.match(/[?&]code=([^&#]+)/)[1]
       if (code !== 'test') {
-        return axios.get(config.backend + '/nickname', {
+        return axios.get(config.backend + 'nickname', {
           params: { code }
         }).then(res => {
           return res.data
@@ -176,9 +175,7 @@ export default {
     },
     async queryTreeInfo (id) {
       this.treeID = id
-      this.loading = true
       contract.methods.getTreeInfo(id).call().then(res => {
-        this.loading = false
         this.hasTree = res.treeExist
         this.owner = res.owner
         this.treeLampsID = res.lampIDs
