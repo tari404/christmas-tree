@@ -147,11 +147,22 @@ export default {
       this.queryTreeInfo(this.treeID)
     },
     async getWeChatUserName () {
+      const openid = sessionStorage.getItem('openid')
+      const name = sessionStorage.getItem('name')
+      if (openid && name) {
+        return {
+          openid,
+          name,
+          ok: true
+        }
+      }
       const code = location.search.match(/[?&]code=([^&#]+)/)[1]
       if (code !== 'test') {
         return axios.get(config.backend + 'nickname', {
           params: { code }
         }).then(res => {
+          sessionStorage.setItem('openid', openid)
+          sessionStorage.setItem('name', name)
           return res.data
         }).catch(err => {
           console.error(err)
@@ -170,6 +181,7 @@ export default {
     },
     share () {
       const url = config.frontend + '?id=' + this.treeID
+      this.injectWxShareMenu({ shareTitle: '分享标题', shareDescr: '分享描述', shareIcon: '', shareUrl: url })
       // TODO: share with wechat
     },
     async queryTreeInfo (id) {
