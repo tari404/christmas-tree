@@ -116,6 +116,7 @@ export default {
     const res = location.search.match(/state=([0-9a-fA-F]+)/)
     if (res && res[1]) {
       const id = res[1]
+      history.replaceState(null, null, '/?id=' + id)
       this.queryID = id
       this.queryTreeInfo(id)
     }
@@ -131,6 +132,7 @@ export default {
         this.address = account.address
         this.myID = id
         if (!this.queryID) {
+          history.replaceState(null, null, '/?id=' + id)
           this.queryTreeInfo(id)
         }
       }
@@ -150,7 +152,7 @@ export default {
     async getWeChatUserName () {
       const code = location.search.match(/[?&]code=([^&#]+)/)[1]
       if (code !== 'test') {
-        axios.get(config.backend + '/nickname', {
+        return axios.get(config.backend + '/nickname', {
           params: { code }
         }).then(res => {
           return res.data
@@ -167,12 +169,12 @@ export default {
       }
     },
     jumpToMine () {
-      const url = config.frontEnd + '?id=' + this.myID
-      location.href = url
+      this.queryTreeInfo(this.myID)
+      history.replaceState(null, null, '/?id=' + this.myID)
     },
     share () {
-      const url = config.frontEnd + '?id=' + this.treeID
-      console.log(url)
+      const url = config.frontend + '?id=' + this.treeID
+      history.replaceState(null, null, '/?id=' + this.myID)
       // TODO: share with wechat
     },
     async queryTreeInfo (id) {
@@ -210,6 +212,7 @@ export default {
           console.error(err)
         }).then(() => {
           this.queryTreeInfo(this.treeID)
+          history.replaceState(null, null, '/?id=' + this.treeID)
           setTimeout(() => {
             this.status = ''
           }, 2000)
