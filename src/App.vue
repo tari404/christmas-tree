@@ -116,6 +116,7 @@ export default {
     const res = location.search.match(/state=([0-9a-fA-F]+)/)
     if (res && res[1]) {
       const id = res[1]
+      history.replaceState(null, null, '/?id=' + id)
       this.queryID = id
       this.queryTreeInfo(id)
     }
@@ -131,6 +132,7 @@ export default {
         this.address = account.address
         this.myID = id
         if (!this.queryID) {
+          history.replaceState(null, null, '/?id=' + id)
           this.queryTreeInfo(id)
         }
       }
@@ -172,7 +174,7 @@ export default {
     },
     share () {
       const url = config.frontend + '?id=' + this.treeID
-      console.log(url)
+      history.replaceState(null, null, '/?id=' + this.myID)
       // TODO: share with wechat
     },
     async queryTreeInfo (id) {
