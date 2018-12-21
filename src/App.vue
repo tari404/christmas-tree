@@ -137,6 +137,7 @@ export default {
   },
   mounted () {
     this.snow = true
+    this.share()
   },
   methods: {
     addLamp () {
@@ -231,7 +232,7 @@ export default {
       let signUrl = encodeURIComponent(location.href.split("#")[0])
       let fd = new FormData()
       fd.append("url", signUrl);
-      axios.post("//sc.truescan.net/api/unauth/weixin/getWxSign",fd).then(res=>{
+      axios.post("http://sc.truescan.net/api/unauth/weixin/getWxSign",fd).then(res=>{
         console.log('sign url con is',res)
         if (res.data.code === 200) {
           let d = res.data.result
