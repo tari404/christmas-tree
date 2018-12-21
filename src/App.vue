@@ -219,6 +219,9 @@ export default {
     // 向微信分享菜单注入分享内容
     injectWxShareMenu({shareUrl,shareTitle,shareDescr,shareIcon}) {
       let signUrl = encodeURIComponent(location.href.split("#")[0])
+      axios.post(config.backend + '/wechat/getjscfg',{url:signUrl}).then(res=>{
+        console.log('sign url con is',res)
+      })
       wx.config({
         debug: false, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
         appId: '', // 必填，公众号的唯一标识
