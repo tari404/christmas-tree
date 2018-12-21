@@ -242,7 +242,7 @@ export default {
       })
     },
     injectWxShareMenu({ shareUrl, shareTitle, shareDescr, shareIcon }) {
-      let signUrl = encodeURIComponent(config.frontend)
+      let signUrl = encodeURIComponent(location.href.split('#')[0])
       axios.get(config.backend + 'wx-sign?signUrl=' + signUrl).then(res => {
         // console.log('sign url con is', res.data)
         if (res.data.code === 200) {
@@ -263,24 +263,12 @@ export default {
               title: shareTitle,
               desc: decodeURIComponent(shareDescr),
               link: shareUrl,
-              imgUrl: shareIcon,
-              success: () => {
-                alert("分享微信好友成功")
-              },
-              cancel: () => {
-                alert("取消分享")
-              }
+              imgUrl: shareIcon
             })
             wx.updateTimelineShareData({
               title: shareDescr,
               link: shareUrl,
-              imgUrl: shareIcon,
-              success: () => {
-                alert("分享微信好友成功")
-              },
-              cancel: () => {
-                alert("取消分享")
-              }
+              imgUrl: shareIcon
             })
           })
         }
