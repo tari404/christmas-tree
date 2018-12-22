@@ -7,7 +7,7 @@
     <div :style="{ 'opacity': hasTree ? 1 : .5 }" id="tree">
       <lamp v-for="(lamp, i) in treeLamps" :key="i"
         v-if="lamp.info" :info="lamp.info"
-        size="66" :offset="lampPos[i]"
+        size="66" :offset="lampPos[i]" :rotate="dGamma"
         @detail="setDetail(lamp.creater)" />
     </div>
     <draw-lamp v-if="route === 'add'" @finish="backToHome" :me="me" :treeID="treeID" :address="address" />
@@ -97,6 +97,7 @@ export default {
   name: 'App',
   data () {
     return {
+      raf: 0,
       queryID: '',
       treeID: '',
       owner: '',
@@ -123,7 +124,9 @@ export default {
       route: '',
       friend: '',
       showShareNotice: false,
-      shareUrl: ''
+      shareUrl: '',
+      rotateGamma: 0,
+      dGamma: 0
     }
   },
   created () {
@@ -151,6 +154,8 @@ export default {
   },
   mounted () {
     this.snow = true
+    this.raf = requestAnimationFrame(this.update)
+    window.addEventListener('deviceorientation', this.orient, false)
   },
   methods: {
     addLamp () {
@@ -304,7 +309,19 @@ export default {
     },
     closeShareNotice () {
       this.showShareNotice = false
+    },
+    orient (e) {
+      const gamma = e.gamma
+      this.rotateGamma = Math.max(Math.min(30, gamma), -30)
+    },
+    update (time) {
+      this.dGamma += Math.sin(time / 650) / 2 + (this.rotateGamma - this.dGamma) * 0.04
+      this.raf = requestAnimationFrame(this.update)
     }
+  },
+  beforeDestroy () {
+    cancelAnimationFrame(this.raf)
+    window.removeEventListener('deviceorientation', this.orient, false)
   },
   components: {
     Lamp,

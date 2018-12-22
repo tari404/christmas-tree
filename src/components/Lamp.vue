@@ -1,6 +1,6 @@
 <template>
   <div class="lamp" :style="{
-    'transform': `translate3d(${offset.x}px, ${offset.y}px, 0)`
+    'transform': `translate3d(${offset.x}px, ${offset.y}px, 0) rotate(${rotate || 0}deg)`
   }">
     <svg viewBox="0 0 320 320" :width="width" :height="width" @touchstart="showInfo">
       <circle cx="160" cy="10" r="4" fill="#e0eedc" />
@@ -76,7 +76,7 @@ const decodeColor = (hex) => {
 
 export default {
   name: 'Lamp',
-  props: ['info', 'size', 'offset'],
+  props: ['info', 'size', 'offset', 'rotate'],
   data () {
     return {
       d: '',
@@ -141,6 +141,7 @@ export default {
   position absolute
   top 0
   left 50%
+  transform-origin 0 0
 svg
   transform translate3d(-50%, 0, 0)
 .path
