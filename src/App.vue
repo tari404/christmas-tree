@@ -29,6 +29,7 @@
     </div>
     <intro/>
     <rank/>
+    <q-rcode :url="shareUrl" @end="closeQRCode" />
     <music/>
   </div>
 </template>
@@ -38,6 +39,7 @@ import Lamp from '@/components/Lamp'
 import DrawLamp from '@/components/DrawLamp'
 import Intro from '@/components/Intro'
 import Rank from '@/components/Rank'
+import QRcode from '@/components/QRcode'
 import Music from '@/components/Music'
 import axios from 'axios'
 import wx from 'weixin-js-sdk'
@@ -120,7 +122,8 @@ export default {
       lampPos,
       route: '',
       friend: '',
-      showShareNotice: false
+      showShareNotice: false,
+      shareUrl: ''
     }
   },
   created () {
@@ -148,7 +151,6 @@ export default {
   },
   mounted () {
     this.snow = true
-    this.share()
   },
   methods: {
     addLamp () {
@@ -192,8 +194,8 @@ export default {
       this.queryTreeInfo(this.myID)
     },
     share (showShareNotice) {
+      const url = config.frontend + '?id=' + this.treeID
       if (this.me) {
-        const url = config.frontend + '?id=' + this.treeID
         this.injectWxShareMenu({
           shareTitle: '祝福上初链(TRUE)，真心永流传！',
           shareDescr: `我是${this.me}，给你送上圣诞祝福，邀请你一起点亮圣诞树`,
@@ -201,11 +203,18 @@ export default {
           shareUrl: url
         })
       }
+      if (showShareNotice) {
+        this.shareUrl = url
+      }
       this.showShareNotice = showShareNotice
+    },
+    closeQRCode () {
+      this.shareUrl = ''
     },
     async queryTreeInfo (id) {
       this.treeID = id
       this.share(false)
+      this.shareUrl = ''
       contract.methods.getTreeInfo(id).call().then(res => {
         this.hasTree = res.treeExist
         this.owner = res.owner
@@ -302,6 +311,7 @@ export default {
     DrawLamp,
     Intro,
     Rank,
+    QRcode,
     Music
   }
 }
