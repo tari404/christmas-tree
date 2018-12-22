@@ -28,6 +28,7 @@
       <p>来自 {{friend}} 的彩灯</p>
     </div>
     <intro/>
+    <music/>
   </div>
 </template>
 
@@ -35,6 +36,7 @@
 import Lamp from '@/components/Lamp'
 import DrawLamp from '@/components/DrawLamp'
 import Intro from '@/components/Intro'
+import Music from '@/components/Music'
 import axios from 'axios'
 import wx from 'weixin-js-sdk'
 import config from '../config.json'
@@ -296,7 +298,8 @@ export default {
   components: {
     Lamp,
     DrawLamp,
-    Intro
+    Intro,
+    Music
   }
 }
 </script>
