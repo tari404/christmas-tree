@@ -312,7 +312,7 @@ export default {
     },
     orient (e) {
       const gamma = e.gamma
-      this.rotateGamma = Math.max(Math.min(30, gamma), -30)
+      this.rotateGamma = Math.max(Math.min(30, -gamma), -30)
     },
     update (time) {
       this.dGamma += Math.sin(time / 650) / 2 + (this.rotateGamma - this.dGamma) * 0.04
