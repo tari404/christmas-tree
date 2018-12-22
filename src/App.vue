@@ -24,7 +24,7 @@
       <p v-html="status"></p>
     </div>
     <div v-if="showShareNotice" id="share-mask" @touchstart="closeShareNotice()"></div>
-    <div v-if="friend" id="friend-mask" @touchstart="setDetail('')">
+    <div v-if="friend" id="friend-mask" @touchstart="setDetail('', '')">
       <p>来自 {{friend}} 的彩灯</p>
       <span @touchstart="showFriend">查看TA的圣诞树</span>
     </div>
