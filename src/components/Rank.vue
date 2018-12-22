@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="info-layer" :style="{ 'z-index': open ? 99999 : 10000 }">
     <div class="rank-index" @touchstart="toggleMenu(true)">排行榜</div>
     <div v-if="open" id="rank" @touchstart="toggleMenu(false)">
       <div>

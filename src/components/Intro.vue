@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="info-layer" :style="{ 'z-index': open ? 99999 : 10000 }">
     <div class="intro-index" @touchstart="toggleMenu(true)">活动说明</div>
     <div v-if="open" id="intro" @touchstart="toggleMenu(false)">
       <div>

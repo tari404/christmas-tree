@@ -321,6 +321,8 @@ body
   height 100%
 
 .tree-info
+  position relative
+  z-index 10000
   font-size 20px
   margin 0
   padding 34px
