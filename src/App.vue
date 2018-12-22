@@ -182,8 +182,8 @@ export default {
         })
       } else {
         return {
-          openid: 'test',
-          name: 'test',
+          openid: 'test-2',
+          name: 'test-2',
           ok: true
         }
       }
