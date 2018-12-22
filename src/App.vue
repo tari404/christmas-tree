@@ -4,7 +4,10 @@
     <p v-if="treeID !== myID && !hasTree" class="tree-info">该圣诞树不存在</p>
     <p v-else-if="!hasTree" class="tree-info">你还没有自己的圣诞树</p>
     <p v-else class="tree-info">{{owner === me ? '我' : owner}} 的圣诞树</p>
-    <div :style="{ 'opacity': hasTree ? 1 : .5 }" id="tree">
+    <div id="tree" :style="{
+      'opacity': hasTree ? 1 : .5,
+      'transform': `translateY(-50%) scaleY(${treeScale}) skewX(${treeSkew}deg)`
+    }">
       <lamp v-for="(lamp, i) in treeLamps" :key="i"
         v-if="lamp.info" :info="lamp.info"
         size="66" :offset="lampPos[i]" :rotate="dGamma"
@@ -31,7 +34,7 @@
     <intro/>
     <rank/>
     <q-rcode :url="shareUrl" @end="closeQRCode" />
-    <music/>
+    <music @toggle="updateMusicState" />
   </div>
 </template>
 
@@ -127,9 +130,12 @@ export default {
       friendID: '',
       showShareNotice: false,
       shareUrl: '',
+      musicPlaying: false,
       rotateGamma: 0,
       aGamma: 0,
-      dGamma: 0
+      dGamma: 0,
+      treeScale: 1,
+      treeSkew: 0
     }
   },
   created () {
@@ -321,9 +327,19 @@ export default {
       const gamma = e.gamma
       this.rotateGamma = Math.max(Math.min(30, -gamma), -30)
     },
+    updateMusicState (playing) {
+      this.musicPlaying = playing
+    },
     update (time) {
       this.aGamma += (this.rotateGamma - this.dGamma) * 0.16
-      this.dGamma += Math.sin(time / 210) / 5 + (this.aGamma - this.dGamma) * 0.04
+      this.dGamma += (this.aGamma - this.dGamma) * 0.04
+      this.treeScale += (1 - this.treeScale) * 0.04
+      this.treeSkew *= 0.96
+      if (this.musicPlaying && this.hasTree) {
+        this.dGamma += Math.sin(time / 212) / 5
+        this.treeScale += Math.sin(time / 423) / 1400
+        this.treeSkew += Math.sin(time / 1694) / 20
+      }
       this.raf = requestAnimationFrame(this.update)
     }
   },
@@ -368,7 +384,7 @@ body
   height 594px
   left 11px
   top 50%
-  transform translateY(-50%)
+  transform-origin 50% 100%
   background-size contain
   background-repeat no-repeat
   background-image url(./assets/tree.png)

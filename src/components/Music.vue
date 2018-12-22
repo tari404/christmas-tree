@@ -28,13 +28,16 @@ export default {
     tryToPlay () {
       this.v.play().then(() => {
         this.playing = true
+        this.$emit('toggle', true)
       }).catch(() => {
         this.playing = false
+        this.$emit('toggle', false)
       })
     },
     togglePlay () {
       if (this.playing) {
         this.playing = false
+        this.$emit('toggle', false)
         this.v.pause()
       } else {
         this.tryToPlay()
@@ -57,7 +60,7 @@ svg
   opacity .5
 .while-playing
   opacity 1 !important
-  animation shake 0.68s ease-in-out infinite alternate
+  animation shake 0.665s ease-in-out infinite alternate
 @keyframes shake
   from
     transform rotate(10deg)
