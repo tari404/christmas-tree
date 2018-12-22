@@ -55,7 +55,7 @@ export default {
     left 20px
     z-index 11000
     background-color #fffd
-    background linear-gradient(top, #fffc, #fff)
+    background linear-gradient(to bottom, #fffc, #fff)
     color #333
     border-radius 10px
   .title

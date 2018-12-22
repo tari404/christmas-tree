@@ -77,7 +77,7 @@ export default {
     left 20px
     z-index 11000
     background-color #fffd
-    background linear-gradient(top, #fffc, #fff)
+    background linear-gradient(to bottom, #fffc, #fff)
     color #333
     border-radius 10px
   .title
@@ -102,7 +102,6 @@ export default {
       border-radius 0 0 10px 10px
       background-color #fff
       height 10px
-      
   .ranking
     width 60px
   .name
