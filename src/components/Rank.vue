@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div v-if="!open" class="rank-index" @touchstart="toggleMenu(true)">排行榜</div>
+    <div class="rank-index" @touchstart="toggleMenu(true)">排行榜</div>
     <div v-if="open" id="rank" @touchstart="toggleMenu(false)">
       <div>
         <p class="title">排行榜</p>
@@ -64,15 +64,22 @@ export default {
   padding 0 10px 0 15px
 #rank
   position fixed
-  width 360px
-  height calc(100% - 20px)
-  top 20px
-  left 20px
-  z-index 11000
-  background-color #fffd
-  background linear-gradient(top, #fffc, #fff)
-  color #333
-  border-radius 10px
+  top 0
+  left 0
+  width 100%
+  height 100%
+  z-index 10999
+  div
+    position fixed
+    width 360px
+    height calc(100% - 20px)
+    top 20px
+    left 20px
+    z-index 11000
+    background-color #fffd
+    background linear-gradient(top, #fffc, #fff)
+    color #333
+    border-radius 10px
   .title
     font-size 18px
     margin 24px

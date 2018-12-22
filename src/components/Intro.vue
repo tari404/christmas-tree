@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div v-if="!open" class="intro-index" @touchstart="toggleMenu(true)">活动说明</div>
+    <div class="intro-index" @touchstart="toggleMenu(true)">活动说明</div>
     <div v-if="open" id="intro" @touchstart="toggleMenu(false)">
       <div>
         <p class="title">活动说明</p>
@@ -42,15 +42,22 @@ export default {
   padding 0 10px 0 15px
 #intro
   position fixed
-  width 360px
-  height calc(100% - 20px)
-  top 20px
-  left 20px
-  z-index 11000
-  background-color #fffd
-  background linear-gradient(top, #fffc, #fff)
-  color #333
-  border-radius 10px
+  top 0
+  left 0
+  width 100%
+  height 100%
+  z-index 10999
+  div
+    position fixed
+    width 360px
+    height calc(100% - 20px)
+    top 20px
+    left 20px
+    z-index 11000
+    background-color #fffd
+    background linear-gradient(top, #fffc, #fff)
+    color #333
+    border-radius 10px
   .title
     font-size 18px
     margin 24px
