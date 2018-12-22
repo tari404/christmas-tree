@@ -27,12 +27,14 @@
     <div v-if="friend" id="friend-mask" @touchstart="setDetail('')">
       <p>来自 {{friend}} 的彩灯</p>
     </div>
+    <intro/>
   </div>
 </template>
 
 <script>
 import Lamp from '@/components/Lamp'
 import DrawLamp from '@/components/DrawLamp'
+import Intro from '@/components/Intro'
 import axios from 'axios'
 import wx from 'weixin-js-sdk'
 import config from '../config.json'
@@ -123,7 +125,6 @@ export default {
     if (res && res[1]) {
       const id = res[1]
       this.queryID = id
-      this.queryTreeInfo(id)
     }
     this.getWeChatUserName().then(({ openid, name, ok }) => {
       if (!ok) {
@@ -136,9 +137,7 @@ export default {
         const id = web3t.utils.hexToNumberString(account.address.substr(0, 18))
         this.address = account.address
         this.myID = id
-        if (!this.queryID) {
-          this.queryTreeInfo(id)
-        }
+        this.queryTreeInfo(this.queryID || id)
       }
     })
   },
@@ -200,9 +199,9 @@ export default {
       this.showShareNotice = showShareNotice
     },
     async queryTreeInfo (id) {
-      this.share(false)
       const url = config.frontend + '?id=' + id
       this.treeID = id
+      this.share(false)
       contract.methods.getTreeInfo(id).call().then(res => {
         this.hasTree = res.treeExist
         this.owner = res.owner
@@ -296,7 +295,8 @@ export default {
   },
   components: {
     Lamp,
-    DrawLamp
+    DrawLamp,
+    Intro
   }
 }
 </script>
