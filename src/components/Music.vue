@@ -22,7 +22,7 @@ export default {
   },
   mounted () {
     this.v = this.$el.querySelector('audio')
-    this.tryToPlay()
+    document.addEventListener('WeixinJSBridgeReady', this.tryToPlay, false)
   },
   methods: {
     tryToPlay () {
@@ -40,6 +40,9 @@ export default {
         this.tryToPlay()
       }
     }
+  },
+  beforeDestroy () {
+    document.removeEventListener('WeixinJSBridgeReady', this.tryToPlay, false)
   }
 }
 </script>
@@ -54,7 +57,7 @@ svg
   opacity .5
 .while-playing
   opacity 1 !important
-  animation shake 1s ease-in-out infinite alternate
+  animation shake 0.68s ease-in-out infinite alternate
 @keyframes shake
   from
     transform rotate(10deg)
