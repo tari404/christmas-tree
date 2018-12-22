@@ -195,7 +195,7 @@ export default {
       if (this.me) {
         const url = config.frontend + '?id=' + this.treeID
         this.injectWxShareMenu({
-          shareTitle: '用真心送祝福，祝福上初链(TRUE)，恒久永流传！',
+          shareTitle: '祝福上初链(TRUE)，真心永流传！',
           shareDescr: `我是${this.me}，给你送上圣诞祝福，邀请你一起点亮圣诞树`,
           shareIcon: config.frontend + 'share_icon_20181221205910.jpg',
           shareUrl: url
