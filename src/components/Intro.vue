@@ -33,7 +33,7 @@ export default {
 <style lang="stylus" scoped>
 .intro-index
   position fixed
-  top 80px
+  top 100px
   height 30px
   line-height 30px
   right 0

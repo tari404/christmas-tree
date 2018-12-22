@@ -335,7 +335,8 @@ body
   z-index 10000
   font-size 20px
   margin 0
-  padding 34px
+  line-height 40px
+  padding 30px
 #tree
   position fixed
   width 378px

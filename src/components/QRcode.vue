@@ -39,8 +39,8 @@ export default {
 <style lang="stylus" scoped>
 #qr-code
   position fixed
-  top 20px
-  left 20px
+  top 10px
+  left 10px
   width 80px
   height 80px
   overflow hidden

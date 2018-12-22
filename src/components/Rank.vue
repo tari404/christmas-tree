@@ -55,7 +55,7 @@ export default {
 <style lang="stylus" scoped>
 .rank-index
   position fixed
-  top 120px
+  top 140px
   height 30px
   line-height 30px
   right 0

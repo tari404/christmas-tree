@@ -48,7 +48,7 @@ export default {
 #music
   position fixed
   z-index 12000
-  top 20px
+  top 30px
   right 20px
 svg
   opacity .5
