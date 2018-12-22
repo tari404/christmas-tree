@@ -29,7 +29,6 @@ export default {
       this.v.play().then(() => {
         this.playing = true
       }).catch(err => {
-        alert(err.message || err)
         this.playing = false
       })
     },
