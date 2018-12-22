@@ -23,10 +23,6 @@ export default {
   mounted () {
     this.v = this.$el.querySelector('audio')
     this.tryToPlay()
-    document.addEventListener('WeixinJSBridgeReady', () => {
-      this.v.play()
-      this.playing = true
-    })
   },
   methods: {
     tryToPlay () {
