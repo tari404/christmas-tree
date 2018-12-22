@@ -35,7 +35,7 @@ export default {
   position fixed
   top 80px
   height 30px
-  line-height 28px
+  line-height 30px
   right 0
   background-color #0006
   border-radius 15px 0 0 15px
