@@ -62,14 +62,6 @@
   "type": "function"
 }, {
   "constant": false,
-  "inputs": [],
-  "name": "kill",
-  "outputs": [],
-  "payable": false,
-  "stateMutability": "nonpayable",
-  "type": "function"
-}, {
-  "constant": false,
   "inputs": [{
     "name": "_treeID",
     "type": "uint64"

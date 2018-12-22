@@ -8,7 +8,7 @@
       <lamp v-for="(lamp, i) in treeLamps" :key="i"
         v-if="lamp.info" :info="lamp.info"
         size="66" :offset="lampPos[i]" :rotate="dGamma"
-        @detail="setDetail(lamp.creater)" />
+        @detail="setDetail(lamp.creater, lamp.lampID)" />
     </div>
     <draw-lamp v-if="route === 'add'" @finish="backToHome" :me="me" :treeID="treeID" :address="address" />
     <div class="notice" v-if="!me">
@@ -26,6 +26,7 @@
     <div v-if="showShareNotice" id="share-mask" @touchstart="closeShareNotice()"></div>
     <div v-if="friend" id="friend-mask" @touchstart="setDetail('')">
       <p>来自 {{friend}} 的彩灯</p>
+      <span @touchstart="showFriend">查看TA的圣诞树</span>
     </div>
     <intro/>
     <rank/>
@@ -123,6 +124,7 @@ export default {
       lampPos,
       route: '',
       friend: '',
+      friendID: '',
       showShareNotice: false,
       shareUrl: '',
       rotateGamma: 0,
@@ -305,8 +307,12 @@ export default {
         }
       })
     },
-    setDetail (friend) {
+    setDetail (friend, id) {
       this.friend = friend
+      this.friendId = id
+    },
+    showFriend () {
+      this.queryTreeInfo(this.friendId)
     },
     closeShareNotice () {
       this.showShareNotice = false
@@ -415,7 +421,15 @@ body
   top 0
   left 0
   display flex
+  flex-direction column
   align-items center
   justify-content center
-  background-color #fffb
+  background-color #fffc
+  span
+    font-size 14px
+    color #fff
+    background-color #0c806ccc
+    padding 2px 10px
+    line-height 16px
+    border-radius 10px
 </style>
