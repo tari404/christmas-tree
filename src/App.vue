@@ -126,6 +126,7 @@ export default {
       showShareNotice: false,
       shareUrl: '',
       rotateGamma: 0,
+      aGamma: 0,
       dGamma: 0
     }
   },
@@ -315,7 +316,8 @@ export default {
       this.rotateGamma = Math.max(Math.min(30, -gamma), -30)
     },
     update (time) {
-      this.dGamma += Math.sin(time / 650) / 2 + (this.rotateGamma - this.dGamma) * 0.04
+      this.aGamma += (this.rotateGamma - this.dGamma) * 0.16
+      this.dGamma += Math.sin(time / 210) / 5 + (this.aGamma - this.dGamma) * 0.04
       this.raf = requestAnimationFrame(this.update)
     }
   },
