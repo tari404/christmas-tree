@@ -132,6 +132,14 @@ contract XmasTree {
     return (lamp.creater, lamp.info, lamp.score);
   }
 
+  function getRankInfo (uint64 _treeID) public view returns (
+    string memory owner,
+    uint256 count
+  ) {
+    owner = _treeOwner[_treeID];
+    count = _treeLamps[_treeID].length;
+  }
+
   function kill () public {
     require(msg.sender == founder);
     selfdestruct(founder);

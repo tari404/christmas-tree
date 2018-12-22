@@ -42,7 +42,7 @@ export default {
   padding 0 10px 0 15px
 #intro
   position fixed
-  width calc(100% - 40px)
+  width 360px
   height calc(100% - 20px)
   top 20px
   left 20px

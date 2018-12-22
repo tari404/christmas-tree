@@ -25,6 +25,23 @@
   "inputs": [{
     "name": "_treeID",
     "type": "uint64"
+  }],
+  "name": "getRankInfo",
+  "outputs": [{
+    "name": "owner",
+    "type": "string"
+  }, {
+    "name": "count",
+    "type": "uint256"
+  }],
+  "payable": false,
+  "stateMutability": "view",
+  "type": "function"
+}, {
+  "constant": true,
+  "inputs": [{
+    "name": "_treeID",
+    "type": "uint64"
   }, {
     "name": "_lampID",
     "type": "uint64"

@@ -12,7 +12,7 @@ Vue.config.productionTip = false
 
 const web3t = new Web3('https://api.truescan.net/rpc/')
 window.web3t = web3t
-const contract = new web3t.eth.Contract(abi, '0x65CAd13a8f35240fD410a6C38620079A599B204d')
+const contract = new web3t.eth.Contract(abi, '0x3CC4bD65E7edac74Ce18E632ADaE691F32582F2a')
 window.contract = contract
 
 if (!/code=/.test(location.search)) {

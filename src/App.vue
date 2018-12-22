@@ -28,6 +28,7 @@
       <p>来自 {{friend}} 的彩灯</p>
     </div>
     <intro/>
+    <rank/>
     <music/>
   </div>
 </template>
@@ -36,9 +37,11 @@
 import Lamp from '@/components/Lamp'
 import DrawLamp from '@/components/DrawLamp'
 import Intro from '@/components/Intro'
+import Rank from '@/components/Rank'
 import Music from '@/components/Music'
 import axios from 'axios'
 import wx from 'weixin-js-sdk'
+
 import config from '../config.json'
 
 let web3t, contract
@@ -201,7 +204,6 @@ export default {
       this.showShareNotice = showShareNotice
     },
     async queryTreeInfo (id) {
-      const url = config.frontend + '?id=' + id
       this.treeID = id
       this.share(false)
       contract.methods.getTreeInfo(id).call().then(res => {
@@ -242,7 +244,7 @@ export default {
         })
       })
     },
-    injectWxShareMenu({ shareUrl, shareTitle, shareDescr, shareIcon }) {
+    injectWxShareMenu ({ shareUrl, shareTitle, shareDescr, shareIcon }) {
       let signUrl = encodeURIComponent(location.href.split('#')[0])
       axios.get(config.backend + 'wx-sign?signUrl=' + signUrl).then(res => {
         // console.log('sign url con is', res.data)
@@ -299,6 +301,7 @@ export default {
     Lamp,
     DrawLamp,
     Intro,
+    Rank,
     Music
   }
 }

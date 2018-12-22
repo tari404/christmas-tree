@@ -2,15 +2,16 @@ const express = require('express')
 const bodyParser = require('body-parser')
 const Web3 = require('web3')
 const axios = require('axios')
+const request = require('request')
 
 const config = require('./config.json')
-
-const request = require('request')
+const abi = require('../sol/abi.json')
 
 const web3t = new Web3('https://api.truescan.net/rpc/')
 const account = web3t.eth.accounts.privateKeyToAccount(config.privKey)
 web3t.eth.accounts.wallet.add(account)
 const from = account.address
+const contract = new web3t.eth.Contract(abi, '0x3CC4bD65E7edac74Ce18E632ADaE691F32582F2a')
 
 let nonce = 0
 web3t.eth.getTransactionCount(from).then(n => {
@@ -126,11 +127,37 @@ app.get('/nickname', (req, res) => {
   })
 })
 
-app.get('/wx-sign', (req, res) => {
-  let signUrl = encodeURIComponent(req.query.signUrl) 
-  req.pipe(request.post(`http://sc.truescan.net/api/unauth/weixin/getWxSign?url=${signUrl}`)).pipe(res)
+let rankInfo = []
+let updateTime = 0
+const updateRank = () => {
+  contract.methods.topTen().call().then(res => {
+    Promise.all(res.map(id => {
+      return contract.methods.getRankInfo(id).call()
+    })).then(resList => {
+      rankInfo = resList.map(treeInfo => {
+        return {
+          name: treeInfo.owner,
+          count: treeInfo.count
+        }
+      })
+      updateTime = new Date().getTime()
+    }).catch(err => {
+      console.log('rank err: ' + err.message || err)
+    })
+  })
+}
+updateRank()
+app.get('/rank', (_, res) => {
+  res.send(rankInfo)
+  if (new Date().getTime() > updateTime + 30000) {
+    updateRank()
+  }
 })
 
+app.get('/wx-sign', (req, res) => {
+  let signUrl = encodeURIComponent(req.query.signUrl)
+  req.pipe(request.post(`http://sc.truescan.net/api/unauth/weixin/getWxSign?url=${signUrl}`)).pipe(res)
+})
 
 console.log('server listen on port 3100')
 app.listen(3100)
