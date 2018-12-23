@@ -221,7 +221,7 @@ export default {
         let shareDescr = `我是${this.me}，给你送上圣诞祝福，邀请你一起点亮圣诞树`
         if (this.tariMode) {
           shareTitle = '点亮大家的圣诞树 ﾟ∀ﾟ)σ'
-          shareDescr = '和我一起来为朋友们挂上独一无二的圣诞彩灯~'
+          shareDescr = `和我一起来为${this.owner ? this.owner : '朋友们'}添上独一无二的圣诞彩灯~`
         }
         this.injectWxShareMenu({
           shareTitle,
