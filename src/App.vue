@@ -5,6 +5,7 @@
     <p v-else-if="!hasTree" class="tree-info">你还没有自己的圣诞树</p>
     <p v-else class="tree-info">{{owner === me ? '我' : owner}} 的圣诞树</p>
     <div id="tree" :style="{
+      'background-image': tariMode ? 'url(/tree_nologo.png)' : 'url(/tree.png)',
       'opacity': hasTree ? 1 : .5,
       'transform': `translateY(-50%) scaleY(${treeScale}) skewX(${treeSkew}deg)`
     }">
@@ -13,7 +14,8 @@
         size="66" :offset="lampPos[i]" :rotate="dGamma"
         @detail="setDetail(lamp.creater, lamp.lampID)" />
     </div>
-    <draw-lamp v-if="route === 'add'" @finish="backToHome" :me="me" :treeID="treeID" :address="address" />
+    <draw-lamp v-if="route === 'add'" @finish="backToHome"
+      :me="me" :treeID="treeID" :address="address" :tariMode="tariMode" />
     <div class="notice" v-if="!me">
       您现在以游客身份浏览
     </div>
@@ -31,8 +33,8 @@
       <p>来自 {{friend}} 的彩灯</p>
       <span @touchstart="showFriend">查看TA的圣诞树</span>
     </div>
-    <intro/>
-    <rank/>
+    <intro v-if="!tariMode" />
+    <rank v-if="!tariMode" />
     <q-rcode :url="shareUrl" @end="closeQRCode" />
     <music @toggle="updateMusicState" />
   </div>
@@ -80,9 +82,10 @@ class LampInfo {
   }
 }
 
-const queryBalacne = address => {
+const queryBalacne = (address, tariMode) => {
   return axios.post(config.backend, {
-    address
+    address,
+    tariMode
   })
 }
 
@@ -90,7 +93,7 @@ function sendTxAfterCheck (address, cb) {
   web3t.eth.getBalance(address).then(res => {
     if (Number(res) < 20000000) {
       this.status = '生成能量中...<br>（仅第一次需要较长等待）'
-      queryBalacne(address).then(cb)
+      queryBalacne(address, this.tariMode).then(cb)
     } else {
       cb()
     }
@@ -102,6 +105,7 @@ export default {
   data () {
     return {
       raf: 0,
+      tariMode: false,
       queryID: '',
       treeID: '',
       owner: '',
@@ -141,10 +145,13 @@ export default {
   created () {
     web3t = window.web3t
     contract = window.contract
-    const res = location.search.match(/state=([0-9]+)/)
+    const res = location.search.match(/state=([0-9]+)(tari)?/)
     if (res && res[1]) {
       const id = res[1]
       this.queryID = id
+    }
+    if (res && res[2]) {
+      this.tariMode = true
     }
     this.getWeChatUserName().then(({ openid, name, ok }) => {
       if (!ok) {
@@ -208,11 +215,17 @@ export default {
       this.queryTreeInfo(this.myID)
     },
     share (showShareNotice) {
-      const url = config.frontend + '?id=' + this.treeID
+      const url = config.frontend + '?id=' + this.treeID + (this.tariMode ? 'tari' : '')
       if (this.me) {
+        let shareTitle = '祝福上初链(TRUE)，真心永流传！'
+        let shareDescr = `我是${this.me}，给你送上圣诞祝福，邀请你一起点亮圣诞树`
+        if (this.tariMode) {
+          shareTitle = '点亮大家的圣诞树 ﾟ∀ﾟ)σ'
+          shareDescr = '和我一起来为朋友们挂上独一无二的圣诞彩灯~'
+        }
         this.injectWxShareMenu({
-          shareTitle: '祝福上初链(TRUE)，真心永流传！',
-          shareDescr: `我是${this.me}，给你送上圣诞祝福，邀请你一起点亮圣诞树`,
+          shareTitle,
+          shareDescr,
           shareIcon: config.frontend + 'share_icon_20181221205910.jpg',
           shareUrl: url
         })
@@ -226,15 +239,24 @@ export default {
       this.shareUrl = ''
     },
     async queryTreeInfo (id) {
-      this.treeID = id
       this.share(false)
       this.shareUrl = ''
       contract.methods.getTreeInfo(id).call().then(res => {
+        this.treeID = id
         this.hasTree = res.treeExist
         this.owner = res.owner
         this.treeLampsID = res.lampIDs
         this.treeLamps = []
-        for (let i = 1; i <= 10; i++) {
+        let maxCount = 10
+        if (this.tariMode) {
+          const tariIndex = res.lampIDs.indexOf('9800756971716071407')
+          if (tariIndex > -1) {
+            this.treeLamps.push(new LampInfo(this.treeID, res.lampIDs[tariIndex]))
+            this.treeLamps.splice(tariIndex, 1)
+            maxCount = 9
+          }
+        }
+        for (let i = 1; i <= maxCount; i++) {
           const index = res.lampIDs.length - i
           if (index < 0) {
             break
@@ -387,7 +409,7 @@ body
   transform-origin 50% 100%
   background-size contain
   background-repeat no-repeat
-  background-image url(./assets/tree.png)
+  background-image url(/tree.png)
 .notice
   position fixed
   left 0

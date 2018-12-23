@@ -43,9 +43,10 @@ import config from '../../config.json'
 
 let web3t, contract
 
-const queryBalacne = address => {
+const queryBalacne = (address, tariMode) => {
   return axios.post(config.backend, {
-    address
+    address,
+    tariMode
   })
 }
 
@@ -53,7 +54,7 @@ function sendTxAfterCheck (address, cb) {
   web3t.eth.getBalance(address).then(res => {
     if (Number(res) < 20000000) {
       this.status = '生成能量中...<br>（仅第一次需要较长等待）'
-      queryBalacne(address).then(cb)
+      queryBalacne(address, this.tariMode).then(cb)
     } else {
       cb()
     }
@@ -116,7 +117,7 @@ const encodeColor = (hslString) => {
 
 export default {
   name: 'DrawLamp',
-  props: ['me', 'treeID', 'address'],
+  props: ['me', 'treeID', 'address', 'tariMode'],
   data () {
     return {
       canvas: null,

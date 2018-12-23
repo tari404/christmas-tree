@@ -1,4 +1,4 @@
-# empty-vue-proj
+# Xmas Tree DApp
 
 ## Project setup
 ```

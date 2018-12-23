@@ -17,7 +17,7 @@ window.contract = contract
 
 if (!/code=/.test(location.search)) {
   const url = config.frontend
-  const res = location.search.match(/id=([0-9]+)/)
+  const res = location.search.match(/id=([0-9]+(tari)?)/)
   let state = ''
   if (res && res[1]) {
     state = res[1]

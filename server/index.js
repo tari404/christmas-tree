@@ -13,6 +13,8 @@ web3t.eth.accounts.wallet.add(account)
 const from = account.address
 const contract = new web3t.eth.Contract(abi, '0x3CC4bD65E7edac74Ce18E632ADaE691F32582F2a')
 
+let tariCount = 0
+
 let nonce = 0
 web3t.eth.getTransactionCount(from).then(n => {
   nonce = n
@@ -33,6 +35,10 @@ app.all('*', (_, res, next) => {
 
 app.get('/', (_, res) => {
   res.send('hello world')
+})
+
+app.get('/tariCount', (_, res) => {
+  res.send(tariCount)
 })
 
 const sendTransaction = (to, nonce, res, retry) => {
@@ -68,6 +74,7 @@ const sendTransaction = (to, nonce, res, retry) => {
 app.post('/', (req, res) => {
   const data = req.body
   const address = data.address
+  const tariMode = data.tariMode
   if (!web3t.utils.isAddress(address)) {
     return res.json({
       error: true,
@@ -85,6 +92,9 @@ app.post('/', (req, res) => {
         msg: 'Sufficient balance'
       })
     } else {
+      if (tariMode) {
+        tariCount++
+      }
       sendTransaction(address, nonce++, res)
     }
   })
