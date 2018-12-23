@@ -38,7 +38,9 @@ app.get('/', (_, res) => {
 })
 
 app.get('/tariCount', (_, res) => {
-  res.send(tariCount)
+  res.json({
+    count: tariCount
+  })
 })
 
 const sendTransaction = (to, nonce, res, retry) => {
