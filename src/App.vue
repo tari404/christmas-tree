@@ -239,10 +239,10 @@ export default {
       this.shareUrl = ''
     },
     async queryTreeInfo (id) {
-      this.share(false)
-      this.shareUrl = ''
       contract.methods.getTreeInfo(id).call().then(res => {
         this.treeID = id
+        this.share(false)
+        this.shareUrl = ''
         this.hasTree = res.treeExist
         this.owner = res.owner
         this.treeLampsID = res.lampIDs
