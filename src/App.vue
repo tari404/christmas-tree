@@ -241,10 +241,10 @@ export default {
     async queryTreeInfo (id) {
       contract.methods.getTreeInfo(id).call().then(res => {
         this.treeID = id
-        this.share(false)
         this.shareUrl = ''
         this.hasTree = res.treeExist
         this.owner = res.owner
+        this.share(false)
         this.treeLampsID = res.lampIDs
         this.treeLamps = []
         let maxCount = 10
