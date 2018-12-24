@@ -119,6 +119,7 @@ export default {
   name: 'DrawLamp',
   props: ['me', 'treeID', 'address', 'tariMode'],
   data () {
+    const h = Math.floor(Math.random() * 360)
     return {
       canvas: null,
       ctx: null,
@@ -127,8 +128,8 @@ export default {
       points: [],
       disS: [],
       d: '',
-      color0: 'hsl(0, 100%, 38%)',
-      color1: 'hsl(0, 100%, 28%)',
+      color0: `hsl(${h}, 100%, 38%)`,
+      color1: `hsl(${h}, 100%, 28%)`,
       color2: '',
       color3: '',
       t1: 0,
