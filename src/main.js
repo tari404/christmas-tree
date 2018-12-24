@@ -15,7 +15,8 @@ window.web3t = web3t
 const contract = new web3t.eth.Contract(abi, '0x3CC4bD65E7edac74Ce18E632ADaE691F32582F2a')
 window.contract = contract
 
-if (!/code=/.test(location.search)) {
+const ua = window.navigator.userAgent.toLowerCase()
+if (/micromessenger/.test(ua) && !/code=/.test(location.search)) {
   const url = config.frontend
   const res = location.search.match(/id=([0-9]+(tari)?)/)
   let state = ''

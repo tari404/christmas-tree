@@ -23,7 +23,7 @@
     <draw-lamp v-if="route === 'add'" @finish="backToHome"
       :me="me" :treeID="treeID" :address="address" :tariMode="tariMode" />
     <div class="notice" v-if="!me">
-      您现在以游客身份浏览
+      您现在以游客身份浏览，请在微信中打开
     </div>
     <div id="buttons" v-else-if="route === ''">
       <div v-if="treeLampsID.indexOf(myID) === -1 && hasTree" class="button" @touchstart="addLamp">挂上新的彩灯</div>
@@ -199,7 +199,11 @@ export default {
           ok: true
         }
       }
-      const code = location.search.match(/[?&]code=([^&#]+)/)[1]
+      const res = location.search.match(/[?&]code=([^&#]+)/)
+      if (!res) {
+        return { ok: false }
+      }
+      const code = res[1]
       if (code !== 'test') {
         return axios.get(config.backend + 'nickname', {
           params: { code }
