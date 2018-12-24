@@ -14,6 +14,12 @@
         size="66" :offset="lampPos[i]" :rotate="dGamma"
         @detail="setDetail(lamp.creater, lamp.lampID)" />
     </div>
+    <div class="turn-left" :style="{
+      'opacity': lampsOffset > 0 ? 1 : .2
+    }" @touchstart="turning(-10)" />
+    <div class="turn-right" :style="{
+      'opacity': lampsOffset + 10 < lampsCount ? 1 : .2
+    }" @touchstart="turning(10)" />
     <draw-lamp v-if="route === 'add'" @finish="backToHome"
       :me="me" :treeID="treeID" :address="address" :tariMode="tariMode" />
     <div class="notice" v-if="!me">
@@ -126,6 +132,8 @@ export default {
         ]
       },
       hasTree: false,
+      lampsCount: 0,
+      lampsOffset: 0,
       treeLampsID: [],
       treeLamps: [],
       lampPos,
@@ -238,6 +246,23 @@ export default {
     closeQRCode () {
       this.shareUrl = ''
     },
+    turning (offset) {
+      const to = this.lampsOffset + offset
+      if (to >= 0 && to < this.lampsCount) {
+        this.lampsOffset = to
+        this.updateLamps()
+      }
+    },
+    updateLamps () {
+      this.treeLamps = []
+      for (let i = 1; i <= 10; i++) {
+        const index = this.treeLampsID.length - i - this.lampsOffset
+        if (index < 0) {
+          break
+        }
+        this.treeLamps.push(new LampInfo(this.treeID, this.treeLampsID[index]))
+      }
+    },
     async queryTreeInfo (id) {
       contract.methods.getTreeInfo(id).call().then(res => {
         this.treeID = id
@@ -246,23 +271,15 @@ export default {
         this.owner = res.owner
         this.share(false)
         this.treeLampsID = res.lampIDs
-        this.treeLamps = []
-        let maxCount = 10
         if (this.tariMode) {
-          const tariIndex = res.lampIDs.indexOf('9800756971716071407')
+          const tariIndex = this.treeLampsID.indexOf('9800756971716071407')
           if (tariIndex > -1) {
-            this.treeLamps.push(new LampInfo(this.treeID, res.lampIDs[tariIndex]))
-            res.lampIDs.splice(tariIndex, 1)
-            maxCount = 9
+            this.treeLampsID.splice(tariIndex, 1)
+            this.treeLampsID.push('9800756971716071407')
           }
         }
-        for (let i = 1; i <= maxCount; i++) {
-          const index = res.lampIDs.length - i
-          if (index < 0) {
-            break
-          }
-          this.treeLamps.push(new LampInfo(this.treeID, res.lampIDs[index]))
-        }
+        this.lampsCount = this.treeLampsID.length
+        this.updateLamps()
       })
     },
     createNewTree () {
@@ -410,6 +427,22 @@ body
   background-size contain
   background-repeat no-repeat
   background-image url(/tree.png)
+.turn-left
+  position fixed
+  top 50%
+  left 10px
+  width 30px
+  height 80px
+  background-image url(./assets/turn-left.png)
+  z-index 13000
+.turn-right
+  position fixed
+  top 50%
+  right 10px
+  width 30px
+  height 80px
+  background-image url(./assets/turn-right.png)
+  z-index 13000
 .notice
   position fixed
   left 0
