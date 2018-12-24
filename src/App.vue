@@ -252,7 +252,7 @@ export default {
           const tariIndex = res.lampIDs.indexOf('9800756971716071407')
           if (tariIndex > -1) {
             this.treeLamps.push(new LampInfo(this.treeID, res.lampIDs[tariIndex]))
-            this.treeLamps.splice(tariIndex, 1)
+            res.lampIDs.splice(tariIndex, 1)
             maxCount = 9
           }
         }

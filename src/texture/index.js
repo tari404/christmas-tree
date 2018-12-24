@@ -11,6 +11,8 @@ import oblique from './oblique'
 import star from './star'
 import heart from './heart'
 
+import santa from './santa'
+
 export const Texture = Vue.component('interface-input', {
   functional: true,
   render (createElement, context) {
@@ -26,6 +28,7 @@ export const Texture = Vue.component('interface-input', {
         case 7: return lines4
         case 8: return star
         case 9: return heart
+        case 255: return santa
         default: return lines
       }
     }
