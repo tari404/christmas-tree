@@ -283,6 +283,7 @@ export default {
           }
         }
         this.lampsCount = this.treeLampsID.length
+        this.lampsCount = 0
         this.updateLamps()
       })
     },
