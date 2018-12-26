@@ -1,6 +1,7 @@
 <template>
   <div class="info-layer" :style="{ 'z-index': open ? 99999 : 10000 }">
     <div class="rank-index" @touchstart="toggleMenu(true)">排行榜</div>
+    <div class="rank-end">排名活动已结束</div>
     <div v-if="open" id="rank" @touchstart="toggleMenu(false)">
       <div>
         <p class="title">排行榜 (截止25日24:00)</p>
@@ -75,6 +76,12 @@ export default {
   background-color #0006
   border-radius 15px 0 0 15px
   padding 0 10px 0 15px
+.rank-end
+  position fixed
+  top 174px
+  font-size 12px
+  right 4px
+  color #333
 #rank
   position fixed
   top 0
