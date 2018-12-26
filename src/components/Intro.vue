@@ -11,7 +11,7 @@
         <p class="content">第一名1位 80个True</p>
         <p class="content">第二名3位 每人60个True</p>
         <p class="content">第三名6位 每人40个True</p>
-        <p class="content">获奖者发邮件至：Helloworld@trueglobal.pro，邮件中应包括微信号、微信昵称与个人圣诞树页面的截图，工作人员会在确认信息后联系您。</p>
+        <p class="content">获奖者发邮件至：Helloworld@trueglobal.pro，邮件中应包括微信号、微信昵称、以太坊收款地址与个人圣诞树页面的截图，工作人员会在确认信息后联系您。</p>
         <p class="support">技术支持：TrueChain初链社区</p>
       </div>
     </div>
