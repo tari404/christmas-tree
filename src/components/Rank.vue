@@ -3,7 +3,7 @@
     <div class="rank-index" @touchstart="toggleMenu(true)">排行榜</div>
     <div v-if="open" id="rank" @touchstart="toggleMenu(false)">
       <div>
-        <p class="title">排行榜</p>
+        <p class="title">排行榜 (截止26日9:00)</p>
         <ul class="rank-info">
           <li>
             <span class="ranking">排名</span>
@@ -27,17 +27,30 @@ import axios from 'axios'
 
 import config from '../../config.json'
 
-export default {
+const rank = [
+  { name: '丸子哥💙🍡', count: 901 },
+  { name: '重生@升哥', count: 541 },
+  { name: '丑货', count: 440 },
+  { name: '若', count: 363 },
+  { name: '回首', count: 216 },
+  { name: '妙(初链)', count: 183 },
+  { name: '🐳', count: 107 },
+  { name: 'Deepblue', count: 94 },
+  { name: 'Tariii', count: 72 },
+  { name: '白龙马', count: 64 }
+]
 
+export default {
   name: 'Rank',
   data () {
     return {
       open: false,
-      rank: []
+      rank
     }
   },
   created () {
-    this.updateRankInfo()
+    // stop updating rankings
+    // this.updateRankInfo()
   },
   methods: {
     updateRankInfo () {

@@ -5,9 +5,13 @@
       <div>
         <p class="title">活动说明</p>
         <p class="content">创建自己的圣诞树，邀请朋友来挂上一颗独一无二的彩灯！</p>
-        <p class="content">本小游戏基于区块链网络，所有的圣诞树和彩灯信息都会保存在TrueChain初链上。你的祝福不会随着时间的流逝，即使多年之后仍然可以留存。</p>
-        <p class="content">本小游戏不会产生任何费用，也不会记录除微信昵称以外的任何信息。</p>
-        <p class="content">PS：活动结束后，圣诞树上收到彩灯最多的前10名用户还将获得神秘礼物。</p>
+        <!-- <p class="content">本小游戏基于区块链网络，所有的圣诞树和彩灯信息都会保存在TrueChain初链上。你的祝福不会随着时间的流逝，即使多年之后仍然可以留存。</p>
+        <p class="content">本小游戏不会产生任何费用，也不会记录除微信昵称以外的任何信息。</p> -->
+        <p class="content">排名活动已结束，点灯数量前10的朋友将分别获得：</p>
+        <p class="content">第一名1位 80个True</p>
+        <p class="content">第二名3位 每人60个True</p>
+        <p class="content">第三名6位 每人40个True</p>
+        <p class="content">获奖者发邮件至：Helloworld@trueglobal.pro，邮件中应包括微信号、微信昵称与个人圣诞树页面的截图，工作人员会在确认信息后联系您。</p>
         <p class="support">技术支持：TrueChain初链社区</p>
       </div>
     </div>
