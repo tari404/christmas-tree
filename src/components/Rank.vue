@@ -3,7 +3,7 @@
     <div class="rank-index" @touchstart="toggleMenu(true)">排行榜</div>
     <div v-if="open" id="rank" @touchstart="toggleMenu(false)">
       <div>
-        <p class="title">排行榜 (截止26日9:00)</p>
+        <p class="title">排行榜 (截止25日24:00)</p>
         <ul class="rank-info">
           <li>
             <span class="ranking">排名</span>
