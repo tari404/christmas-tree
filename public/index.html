@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=400,user-scalable=no">
+    <meta id="viewport" name="viewport" content="initial-scale=1,user-scalable=no">
     <link rel="icon" href="<%= BASE_URL %>favicon.ico">
     <title>一起装扮圣诞树！</title>
   </head>
@@ -14,4 +14,12 @@
     <div id="app"></div>
     <!-- built files will be auto injected -->
   </body>
+  <script>
+    setTimeout(() => {
+      const w = window.innerWidth
+      const scale = w / 400
+      const vpEL = document.querySelector('#viewport')
+      vpEL.content = 'width=400,initial-scale=' + scale + ',maximum-scale=' + scale + ',minimum-scale=' + scale + ',user-scalable=no'
+    }, 200)
+  </script>
 </html>

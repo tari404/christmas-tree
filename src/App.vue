@@ -186,7 +186,9 @@ export default {
     })
   },
   mounted () {
-    this.snow = true
+    setTimeout(() => {
+      this.snow = true
+    }, 500)
     this.raf = requestAnimationFrame(this.update)
     window.addEventListener('deviceorientation', this.orient, false)
   },
