@@ -97,37 +97,48 @@ export default {
       return this.size || 66 + 'px'
     }
   },
-  created () {
-    const info = this.info.replace(/0x/, '')
-    const pointS = info.substr(0, 40).match(/\w{2}/g).map(item => {
-      return Number('0x' + item)
-    }).map((dis, i) => {
-      return {
-        x: -sinS[i] * dis,
-        y: cosS[i] * dis
-      }
-    })
-    const ctrlPointS = genControlPoints(pointS)
-    let d = `M ${pointS[_S - 1].x} ${pointS[_S - 1].y} `
-    for (let i = 0; i < _S; i++) {
-      const p = pointS[i]
-      const cp1 = (i === 0 ? ctrlPointS[_S - 1] : ctrlPointS[i - 1]).cpRight
-      const cp2 = ctrlPointS[i].cpLeft
-      d += ` C ${cp1.x} ${cp1.y}, ${cp2.x} ${cp2.y}, ${p.x} ${p.y}`
+  watch: {
+    info () {
+      this.update()
     }
-    d += ' Z'
-    this.d = d
-    this.color0 = decodeColor(info.substr(40, 4))
-    this.color1 = decodeColor(info.substr(44, 4))
-    this.color2 = decodeColor(info.substr(50, 4))
-    this.color3 = decodeColor(info.substr(56, 4))
-    this.t1 = Number('0x' + info.substr(48, 2))
-    this.t2 = Number('0x' + info.substr(54, 2))
-    this.t3 = Number('0x' + info.substr(60, 2))
+  },
+  created () {
+    this.update()
   },
   methods: {
     showInfo () {
       this.$emit('detail')
+    },
+    update () {
+      if (!this.info) {
+        return
+      }
+      const info = this.info.replace(/0x/, '')
+      const pointS = info.substr(0, 40).match(/\w{2}/g).map(item => {
+        return Number('0x' + item)
+      }).map((dis, i) => {
+        return {
+          x: -sinS[i] * dis,
+          y: cosS[i] * dis
+        }
+      })
+      const ctrlPointS = genControlPoints(pointS)
+      let d = `M ${pointS[_S - 1].x} ${pointS[_S - 1].y} `
+      for (let i = 0; i < _S; i++) {
+        const p = pointS[i]
+        const cp1 = (i === 0 ? ctrlPointS[_S - 1] : ctrlPointS[i - 1]).cpRight
+        const cp2 = ctrlPointS[i].cpLeft
+        d += ` C ${cp1.x} ${cp1.y}, ${cp2.x} ${cp2.y}, ${p.x} ${p.y}`
+      }
+      d += ' Z'
+      this.d = d
+      this.color0 = decodeColor(info.substr(40, 4))
+      this.color1 = decodeColor(info.substr(44, 4))
+      this.color2 = decodeColor(info.substr(50, 4))
+      this.color3 = decodeColor(info.substr(56, 4))
+      this.t1 = Number('0x' + info.substr(48, 2))
+      this.t2 = Number('0x' + info.substr(54, 2))
+      this.t3 = Number('0x' + info.substr(60, 2))
     }
   },
   components: {
