@@ -10,7 +10,7 @@
       'transform': `translateY(-50%) scaleY(${treeScale}) skewX(${treeSkew}deg)`
     }">
       <lamp v-for="(lamp, i) in treeLamps" :key="i"
-        v-if="lamp.info" :info="lamp.info"
+        v-show="lamp.info" :info="lamp.info"
         size="66" :offset="lampPos[i]" :rotate="dGamma"
         @detail="setDetail(lamp.creater, lamp.lampID)" />
     </div>
@@ -43,6 +43,7 @@
     <rank v-if="!tariMode" />
     <q-rcode :url="shareUrl" @end="closeQRCode" />
     <music @toggle="updateMusicState" />
+    <share-code />
   </div>
 </template>
 
@@ -53,6 +54,8 @@ import Intro from '@/components/Intro'
 import Rank from '@/components/Rank'
 import QRcode from '@/components/QRcode'
 import Music from '@/components/Music'
+import ShareCode from '@/components/ShareCode'
+
 import axios from 'axios'
 import wx from 'weixin-js-sdk'
 
@@ -164,6 +167,10 @@ export default {
     this.getWeChatUserName().then(({ openid, name, ok }) => {
       if (!ok) {
         this.me = ''
+      } else if (openid === 'share') {
+        this.me = name
+        this.address = ''
+        this.myID = ''
       } else {
         this.me = name
         const hash = web3t.utils.keccak256(openid)
@@ -204,23 +211,30 @@ export default {
         return { ok: false }
       }
       const code = res[1]
-      if (code !== 'test') {
-        return axios.get(config.backend + 'nickname', {
-          params: { code }
-        }).then(res => {
-          sessionStorage.setItem('xmas-openid', res.data.openid)
-          sessionStorage.setItem('xmas-name', res.data.name)
-          return res.data
-        }).catch(err => {
-          console.error(err)
-          return { ok: false }
-        })
-      } else {
-        return {
-          openid: 'test-2',
-          name: 'test-2',
-          ok: true
-        }
+      switch (code) {
+        case 'share':
+          return {
+            openid: 'share',
+            name: 'share',
+            ok: true
+          }
+        case 'test':
+          return {
+            openid: 'test-2',
+            name: 'test-2',
+            ok: true
+          }
+        default:
+          return axios.get(config.backend + 'nickname', {
+            params: { code }
+          }).then(res => {
+            sessionStorage.setItem('xmas-openid', res.data.openid)
+            sessionStorage.setItem('xmas-name', res.data.name)
+            return res.data
+          }).catch(err => {
+            console.error(err)
+            return { ok: false }
+          })
       }
     },
     jumpToMine () {
@@ -397,7 +411,8 @@ export default {
     Intro,
     Rank,
     QRcode,
-    Music
+    Music,
+    ShareCode
   }
 }
 </script>
