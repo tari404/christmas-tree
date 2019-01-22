@@ -15,11 +15,16 @@
     <!-- built files will be auto injected -->
   </body>
   <script>
-    setTimeout(() => {
-      const w = window.innerWidth
-      const scale = w / 400
+    function resize () {
+      const scale = screen.width / 400
       const vpEL = document.querySelector('#viewport')
       vpEL.content = 'width=400,initial-scale=' + scale + ',maximum-scale=' + scale + ',minimum-scale=' + scale + ',user-scalable=no'
-    }, 200)
+    }
+    window.onload = resize
+    document.addEventListener('message', e => {
+      if (e.data === 'onload') {
+        resize()
+      }
+    })
   </script>
 </html>
