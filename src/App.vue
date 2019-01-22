@@ -43,7 +43,7 @@
     <rank v-if="!tariMode" />
     <q-rcode :url="shareUrl" @end="closeQRCode" />
     <music @toggle="updateMusicState" />
-    <share-code />
+    <share-code v-if="showShareQRCode" />
   </div>
 </template>
 
@@ -150,7 +150,8 @@ export default {
       aGamma: 0,
       dGamma: 0,
       treeScale: 1,
-      treeSkew: 0
+      treeSkew: 0,
+      showShareQRCode: false
     }
   },
   created () {
@@ -171,6 +172,7 @@ export default {
         this.me = name
         this.address = ''
         this.myID = ''
+        this.showShareQRCode = true
       } else {
         this.me = name
         const hash = web3t.utils.keccak256(openid)
