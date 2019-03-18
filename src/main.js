@@ -12,7 +12,7 @@ Vue.config.productionTip = false
 
 const web3t = new Web3('https://api.truescan.net/rpc/')
 window.web3t = web3t
-const contract = new web3t.eth.Contract(abi, '0x3CC4bD65E7edac74Ce18E632ADaE691F32582F2a')
+const contract = new web3t.eth.Contract(abi, '0x714cCC3B390adFB3193C04CB9E065AC4F05b5c75')
 window.contract = contract
 
 const ua = window.navigator.userAgent.toLowerCase()
